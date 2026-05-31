@@ -1,0 +1,175 @@
+﻿<div id="loginModal" class="modal">
+    <div class="modal-card">
+        <h3>Đăng nhập</h3>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input id="loginEmail" type="email" placeholder="email@example.com" required />
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Mật khẩu</label>
+                <input id="loginPassword" type="password" placeholder="Mật khẩu" required />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="loginSubmit">Đăng nhập</button>
+                <button type="button" class="btn-ghost" onclick="switchModal('registerModal')">Đăng ký</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="registerModal" class="modal">
+    <div class="modal-card">
+        <h3>Đăng ký</h3>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="regFullName">Họ và tên</label>
+                <input id="regFullName" type="text" placeholder="Nguyễn Văn A" required />
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email</label>
+                <input id="regEmail" type="email" placeholder="email@example.com" required />
+            </div>
+            <div class="form-group">
+                <label for="regPhone">Số điện thoại</label>
+                <input id="regPhone" type="text" placeholder="0987654321" />
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Mật khẩu</label>
+                <input id="regPassword" type="password" placeholder="Mật khẩu" required />
+            </div>
+            <div class="form-group">
+                <label for="regConfirmPassword">Xác nhận mật khẩu</label>
+                <input id="regConfirmPassword" type="password" placeholder="Nhập lại mật khẩu" required />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="registerSubmit">Đăng ký</button>
+                <button type="button" class="btn-ghost" onclick="switchModal('loginModal')">Đăng nhập</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="applyModal" class="modal">
+    <div class="modal-card" style="max-width:600px">
+        <h3>Ứng tuyển</h3>
+        <div id="applyJobInfo" class="job-info" style="margin-bottom:16px;color:#0b4fab;font-weight:700"></div>
+        <form id="applyForm">
+            <div class="form-group">
+                <label for="applyName">Họ và tên</label>
+                <input id="applyName" type="text" placeholder="Họ và tên" required />
+            </div>
+            <div class="form-group">
+                <label for="applyEmail">Email</label>
+                <input id="applyEmail" type="email" placeholder="Email" required />
+            </div>
+            <div class="form-group">
+                <label for="applyPhone">Số điện thoại</label>
+                <input id="applyPhone" type="text" placeholder="Số điện thoại" required />
+            </div>
+            <div class="form-group">
+                <label for="coverLetter">Thư ứng tuyển</label>
+                <textarea id="coverLetter" placeholder="Viết thư ứng tuyển..." rows="5"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="cvFile">Tải lên CV</label>
+                <input id="cvFile" type="file" accept=".pdf,.doc,.docx" onchange="handleFileSelect(this)" />
+                <div id="fileSelected" class="file-selected" style="display:none;margin-top:8px;color:#0b4fab"></div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-ghost" onclick="closeAllModals()">Hủy</button>
+                <button type="submit" class="btn-primary">Gửi ứng tuyển</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="jobDetailModal" class="modal">
+    <div class="modal-card" style="max-width:720px">
+        <div id="jobDetailContent"></div>
+        <div class="form-actions" style="margin-top:24px">
+            <button type="button" class="btn-ghost" onclick="closeAllModals()">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profileModal" class="modal">
+    <div class="modal-card" style="max-width:600px">
+        <h3>Hồ sơ cá nhân</h3>
+        <div id="profileContent" style="padding:20px 0">
+            <p style="color:#64748b">Đang tải hồ sơ...</p>
+        </div>
+    </div>
+</div>
+
+<!-- CV MANAGER MODAL -->
+<div id="cvManagerModal" class="modal">
+    <div class="modal-card" style="max-width:600px">
+        <h3>Quản lý CV</h3>
+        <div id="cvManagerContent" style="padding:20px 0">
+            <div class="form-group">
+                <label for="cvUploadInput">Tải lên CV mới</label>
+                <input id="cvUploadInput" type="file" accept=".pdf,.doc,.docx" />
+                <small style="color:#64748b">Hỗ trợ: PDF, Word (.doc, .docx)</small>
+            </div>
+            <div style="margin-top:20px;padding:20px;background:#f7fbff;border-radius:8px">
+                <p style="font-weight:600;margin-bottom:10px">CV hiện tại:</p>
+                <p style="color:#64748b"><span id="cvCurrentName">Chưa có CV</span></p>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn-ghost" onclick="closeAllModals()">Đóng</button>
+            <button type="button" class="btn-primary" onclick="saveCvChanges()">Lưu CV</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADMIN STUDENT MANAGEMENT MODAL -->
+<div id="adminStudentModal" class="modal">
+    <div class="modal-card" style="max-width:720px">
+        <h3>Quản lý hồ sơ Sinh viên</h3>
+        <div id="adminStudentContent" style="padding:20px 0"></div>
+        <div class="form-actions">
+            <button type="button" class="btn-ghost" onclick="closeAllModals()">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<div id="adminEditStudentModal" class="modal">
+    <div class="modal-card" style="max-width:600px">
+        <h3>Chỉnh sửa hồ sơ Sinh viên</h3>
+        <div id="adminEditStudentContent" style="padding:20px 0"></div>
+    </div>
+</div>
+
+<!-- POST JOB MODAL -->
+<div id="postJobModal" class="modal">
+    <div class="modal-card" style="max-width:600px">
+        <h3>Đăng tin tuyển dụng</h3>
+        <form id="postJobForm" style="padding:20px 0">
+            <div class="form-group">
+                <label>Tiêu đề vị trí:</label>
+                <input type="text" placeholder="VD: Lập trình viên Frontend" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mức lương:</label>
+                    <input type="text" placeholder="VD: 10-15 triệu" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px" />
+                </div>
+                <div class="form-group">
+                    <label>Địa điểm:</label>
+                    <input type="text" placeholder="VD: Hà Nội, TP.HCM" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Mô tả công việc:</label>
+                <textarea placeholder="Nhập mô tả chi tiết..." style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;min-height:100px;resize:vertical"></textarea>
+            </div>
+        </form>
+        <div class="form-actions">
+            <button type="button" class="btn-ghost" onclick="closeAllModals()">Huỷ</button>
+            <button type="button" class="btn-primary" onclick="showToast('Tin tuyển dụng đã được đăng'); closeAllModals()">Đăng tin</button>
+        </div>
+    </div>
+</div>

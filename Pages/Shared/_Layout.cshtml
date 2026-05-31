@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - InternHub</title>
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="top-announce">
+        Hãy bảo vệ chính mình trước các trường hợp mạo danh. <a href="#">Xem thêm</a>
+    </div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <button id="btnBack" class="btn-back" onclick="goBack()" title="Quay trở lại">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Quay lại
+            </button>
+            
+            <div class="brand">
+
+                <a href="/"><img src="~/images/logo.png" alt="InternHub" class="site-logo" /></a>
+            </div>
+
+            <div class="search-area">
+                <input id="heroSearchInput" type="search" placeholder="Tìm kiếm việc làm, công ty..." />
+                <button id="heroSearchBtn" class="btn-accent" onclick="handleSearch()">Tìm kiếm</button>
+            </div>
+
+            <div class="header-actions" id="headerActions">
+                <button class="btn-ghost" id="btnForEmployers" onclick="switchUserMode('employer')">Nhà tuyển dụng</button>
+                <button class="btn-primary" id="btnLogin" onclick="openModal('loginModal')">Đăng nhập</button>
+            </div>
+
+            <div class="user-area" id="userArea" style="display:none">
+                <div class="user-avatar" id="userAvatarIcon">SV</div>
+                <div class="user-name" id="userDisplayName">Sinh viên</div>
+                <div class="user-menu">
+                    <a href="javascript:void(0)" onclick="openProfile()">Hồ sơ</a>
+                    <a href="javascript:void(0)" onclick="logout()">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="main-nav" id="mainNav">
+        <div class="container">
+            <div class="nav-inner">
+                <div class="nav-group" id="candidateNav" style="display:block">
+                    <div class="nav-title">Ứng viên</div>
+                    <a href="#" onclick="navigateToPage('jobs', event)">Tìm việc thực tập</a>
+                    <a href="#" onclick="navigateToPage('cv', event)">Quản lý CV</a>
+                    <a href="#" onclick="navigateToPage('profile', event)">Hồ sơ cá nhân</a>
+                    <a href="#" onclick="navigateToPage('applications', event)">Đơn ứng tuyển</a>
+                </div>
+
+                <div class="nav-group" id="employerNav" style="display:none">
+                    <div class="nav-title">Nhà tuyên dụng</div>
+                    <a href="#" onclick="navigateToPage('find-candidates', event)">Tìm kiếm ứng viên</a>
+                    <a href="#" onclick="navigateToPage('post-job', event)">Đăng tin tuyên dụng</a>
+                    <a href="#" onclick="navigateToPage('packages', event)">Gói dịch vụ</a>
+                    <a href="#" onclick="navigateToPage('job-applications', event)">Đơn ứng tuyển</a>
+                </div>
+
+                <div class="nav-group" id="adminNav" style="display:none">
+                    <div class="nav-title">Quản trị viên</div>
+                    <a href="#" onclick="navigateToPage('admin-students', event)">Quản lý hồ sơ Sinh viên</a>
+                </div>
+
+                <div class="nav-group">
+                    <div class="nav-title">Hỗ trợ</div>
+                    <a href="#" onclick="navigateToPage('contact', event)">Liên hệ</a>
+                    <a href="#" onclick="navigateToPage('privacy', event)">Chính sách bảo mật</a>
+                    <a href="#" onclick="navigateToPage('terms', event)">Điều khoản sử dụng</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <div id="modalOverlay" class="modal-overlay" onclick="closeAllModals()"></div>
+    <div id="toast" class="toast"></div>
+
+    <partial name="_AuthModals" />
+
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

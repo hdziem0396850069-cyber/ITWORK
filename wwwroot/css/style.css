@@ -1,0 +1,285 @@
+/* ============================================
+   STUDENTWORK – MAIN STYLESHEET
+   Premium Design System
+   ============================================ */
+
+/* === RESET & BASE === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root{
+  --deep-blue:#052043;
+  --mid-blue:#0b4fab;
+  --accent:#ff7a45;
+  --muted:#64748b;
+  --card:#ffffff;
+  --radius:12px;
+  --container:1180px;
+}
+
+/* Global layout helpers */
+body {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin:0;
+  color:#0b2136;
+  background:#f7fbff;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.container{
+  max-width:var(--container);
+  margin:0 auto;
+  padding:0 20px;
+}
+
+/* top announce */
+.top-announce{background:linear-gradient(90deg,#0b61d1,#0b4fab); color:#fff; padding:8px 0; text-align:center; font-size:13px}
+
+/* header */
+.site-header{background:linear-gradient(90deg,var(--deep-blue),var(--mid-blue)); padding:12px 0; color:#fff; position:sticky; top:0; z-index:30}
+.header-inner{display:flex; align-items:center; gap:14px; justify-content:flex-start}
+.btn-back{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.28);
+  color:#fff;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:12px;
+  transition:all 0.2s ease;
+  flex-shrink:0;
+  min-width:98px;
+  min-height:44px;
+}
+.btn-back:hover{
+  background:rgba(255,255,255,0.18);
+}
+.site-logo{height:36px; flex-shrink:0}
+.brand{display:flex; align-items:center}
+.search-area{flex:1; display:flex; align-items:center; gap:10px; margin-left:10px}
+.search-area input{flex:1; padding:12px 18px; border-radius:28px; border:none; outline:none; font-size:15px}
+.btn-accent{background:var(--accent); color:#fff; border:none; padding:10px 16px; border-radius:20px; cursor:pointer; font-weight:500}
+.header-actions{display:flex; gap:8px; align-items:center; flex-shrink:0}
+.btn-ghost{background:transparent; color:#e6f0ff; border:1px solid rgba(255,255,255,0.08); padding:8px 12px; border-radius:10px; cursor:pointer; transition:all 0.2s ease}
+.btn-ghost:hover{background:rgba(255,255,255,0.1); color:#fff}
+.btn-primary{background:#fff; color:var(--mid-blue); padding:8px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:500; transition:all 0.2s ease}
+.btn-primary:hover{box-shadow:0 2px 8px rgba(255,255,255,0.2)}
+
+/* user area */
+.user-area{display:flex; align-items:center; gap:10px; color:#fff; flex-shrink:0; position:relative}
+.user-avatar{width:40px;height:40px;border-radius:50%;background:#fff;color:var(--mid-blue);display:flex;align-items:center;justify-content:center;font-weight:700; cursor:pointer}
+.user-name{font-size:14px; cursor:pointer}
+.user-menu{
+  position:absolute;
+  top:100%;
+  right:0;
+  background:#fff;
+  color:var(--deep-blue);
+  border-radius:8px;
+  min-width:150px;
+  display:none;
+  flex-direction:column;
+  box-shadow:0 4px 12px rgba(2,6,23,0.15);
+  z-index:200;
+  margin-top:8px;
+}
+.user-area:hover .user-menu{
+  display:flex;
+}
+.user-menu a{
+  padding:12px 16px;
+  text-decoration:none;
+  color:var(--deep-blue);
+  border-bottom:1px solid #f0f4f8;
+  transition:all 0.2s ease;
+}
+.user-menu a:last-child{
+  border-bottom:none;
+}
+.user-menu a:hover{
+  background:#f7fbff;
+  color:var(--accent);
+}
+
+/* hero */
+.hero-section{background:var(--deep-blue); padding:24px 0 28px}
+.hero-inner{position:relative}
+.hero-slider{height:380px; border-radius:14px; overflow:hidden; box-shadow:0 8px 30px rgba(2,6,23,0.24)}
+.hero-slider .slide img{width:100%; height:380px; object-fit:cover; display:block}
+.hero-dots{position:absolute; left:50%; transform:translateX(-50%); bottom:14px; display:flex; gap:8px}
+.hero-dots .dot{width:10px;height:6px;background:rgba(255,255,255,0.6);border-radius:6px;cursor:pointer}
+.hero-dots .dot.active{background:#fff; height:8px}
+
+/* COMPANIES STRIP */
+.companies-strip{background:linear-gradient(180deg,#011f45,#08365e); padding:28px 0; color:#fff}
+.companies-grid{display:flex; gap:18px; overflow:auto; padding:12px 0}
+.companies-grid .company-card{min-width:160px; background:#fff; color: #0b2136; border-radius:10px; padding:18px; text-align:center; flex-shrink:0; box-shadow:0 8px 20px rgba(2,6,23,0.12)}
+.company-card img{max-width:100px; max-height:60px; object-fit:contain}
+
+/* FEATURED JOBS (boxed) */
+.featured-jobs{padding:30px 0}
+.boxed{background:linear-gradient(180deg,#fff,#fbfdff); border-radius:12px; padding:18px; border:1px solid #e6eef9}
+.section-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px}
+.best-jobs-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px}
+.job-card{display:flex; gap:14px; background:#fff; padding:16px; border-radius:12px; align-items:flex-start; border:1px solid #f0f4f8}
+.job-logo{width:64px;height:64px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.job-title{font-weight:700}
+.job-meta{color:var(--muted); font-size:13px}
+
+/* INDUSTRIES */
+.industries{padding:28px 0}
+.industries-row{display:flex; gap:16px; flex-wrap:wrap}
+.industry-card{background:#f1f7ff; border-radius:12px; width:210px; padding:20px; text-align:center}
+.industry-icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:rgba(3,67,161,0.06); font-size:28px}
+
+/* QUICK RESULTS */
+.quick-results{padding:28px 0}
+.results-info{color:var(--muted); margin-bottom:10px}
+.jobs-list-full{display:grid; gap:12px}
+
+.quick-layout{display:grid; grid-template-columns:280px 1fr; gap:24px;}
+.filter-panel{position:sticky; top:110px; align-self:start;}
+.filter-card{background:#fff; border:1px solid #e6eef9; border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(2,6,23,0.08);}
+.filter-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.filter-header h4{margin:0; font-size:16px; color:#0b2136;}
+.btn-link{background:transparent; border:none; color:#0b4fab; cursor:pointer; font-weight:700;}
+.filter-group{margin-bottom:18px;}
+.filter-group h5{margin-bottom:12px; font-size:14px; color:#0b4fab;}
+.filter-group label{display:flex; align-items:center; gap:10px; margin-bottom:10px; cursor:pointer; color:#0b445f; font-size:14px;}
+.filter-actions{text-align:right;}
+.job-results .results-header{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px;}
+.job-results .results-header h3{margin:0;}
+.job-card.application-card{background:#fff9e8; border-color:#ffe4a3;}
+.status-badge{display:inline-block; padding:6px 10px; border-radius:999px; background:#effaf3; color:#127c46; font-size:13px; margin-bottom:10px;}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="file"], textarea{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #dfe6f0;
+  border-radius:12px;
+  font-size:14px;
+  color:#0b2136;
+  background:#fff;
+}
+textarea{resize:vertical; min-height:100px;}
+.form-group label{display:block; margin-bottom:8px; color:#102a43; font-size:14px; font-weight:600;}
+
+/* modals */
+.modal-overlay{position:fixed; inset:0; background:rgba(2,6,23,0.45); opacity:0; pointer-events:none; transition:all .18s ease; z-index:90}
+.modal{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none}
+.modal.open, .modal-overlay.open{opacity:1; pointer-events:auto}
+.modal-card{background:#fff; border-radius:12px; padding:18px; width:520px; max-width:95%}
+.form-group{margin-bottom:14px}
+.form-row{display:flex; gap:10px}
+.form-row .form-group{flex:1}
+.form-actions{display:flex; gap:8px; justify-content:flex-end}
+
+.job-detail-header{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px;}
+.job-detail-header h2{margin:0; font-size:22px;}
+.job-detail-header .job-detail-meta{color:var(--muted); font-size:14px; margin-top:8px;}
+.job-detail-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;}
+.job-detail-summary{background:#f0f4ff; border-radius:14px; padding:16px; margin-bottom:18px;}
+.job-detail-section{margin-bottom:18px;}
+.job-detail-section h4{margin-bottom:10px; color:var(--mid-blue); font-size:16px;}
+.job-detail-section ul{list-style:disc; margin-left:20px; color:#334155;}
+.job-detail-section p{color:#475569; line-height:1.7;}
+
+/* toast */
+.toast{position:fixed; right:20px; bottom:20px; background:#0b4fab; color:#fff; padding:12px 16px; border-radius:8px; display:none; z-index:200}
+
+/* MAIN NAVIGATION MENU */
+.main-nav{
+  background:#f7fbff;
+  border-bottom:1px solid #e6eef9;
+  position:sticky;
+  top:52px;
+  z-index:20;
+  padding:16px 0;
+}
+.nav-inner{
+  display:flex;
+  gap:40px;
+  align-items:flex-start;
+}
+.nav-group{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.nav-title{
+  font-weight:700;
+  color:var(--deep-blue);
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:4px;
+}
+.nav-group a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:14px;
+  transition:all 0.2s ease;
+  padding:4px 8px;
+  border-radius:6px;
+}
+.nav-group a:hover{
+  color:var(--mid-blue);
+  background:rgba(11,79,171,0.05);
+  padding-left:12px;
+}
+
+/* responsive */
+@media (max-width:900px){
+  .header-inner{flex-wrap:wrap}
+  .search-area{order:3; width:100%}
+  .companies-grid .company-card{min-width:140px}
+  .hero-slider{height:220px}
+  
+  .main-nav{
+    padding:12px 0;
+    top:50px;
+  }
+  .nav-inner{
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .nav-group{
+    gap:8px;
+  }
+  .nav-group a{
+    font-size:13px;
+  }
+}
+
+@media (max-width:768px){
+  .header-inner{
+    gap:12px;
+  }
+  .btn-back{
+    padding:6px 10px;
+  }
+  .search-area{
+    gap:8px;
+  }
+  .search-area input{
+    font-size:14px;
+    padding:10px 14px;
+  }
+  .btn-accent{
+    padding:8px 14px;
+    font-size:14px;
+  }
+  
+  .main-nav{
+    padding:10px 0;
+  }
+  .nav-inner{
+    gap:16px;
+  }
+  .nav-group a{
+    display:inline-block;
+    font-size:12px;
+  }
+}

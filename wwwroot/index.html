@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InternHub - Tìm Kiếm Thực Tập</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1352de;
+    --primary-dark: #0d3fb5;
+    --primary-light: #e8effe;
+    --accent: #ff6b2b;
+    --accent-light: #fff0e8;
+    --success: #0fbb74;
+    --warning: #f5a623;
+    --danger: #e53e3e;
+    --text: #1a202c;
+    --text-mid: #4a5568;
+    --text-light: #718096;
+    --border: #e2e8f0;
+    --bg: #f7f9fc;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow: 0 4px 16px rgba(0,0,0,0.1);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.15);
+    --radius: 12px;
+    --radius-lg: 18px;
+    --nav-h: 64px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Be Vietnam Pro',sans-serif; color:var(--text); background:var(--bg); line-height:1.6; }
+  a { text-decoration:none; color:inherit; }
+  button { cursor:pointer; border:none; font-family:inherit; }
+  input,textarea,select { font-family:inherit; outline:none; }
+  img { max-width:100%; display:block; }
+ 
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#f1f1f1; }
+  ::-webkit-scrollbar-thumb { background:#c5cfe0; border-radius:3px; }
+ 
+  /* ── TOAST ── */
+  #toast { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
+  .toast-item { padding:14px 20px; border-radius:10px; background:#1a202c; color:#fff; font-size:.875rem; font-weight:500;
+    box-shadow:var(--shadow-lg); display:flex; align-items:center; gap:10px; animation:slideInToast .3s ease; max-width:340px; }
+  .toast-item.success { background:var(--success); }
+  .toast-item.error { background:var(--danger); }
+  .toast-item.info { background:var(--primary); }
+  @keyframes slideInToast { from{transform:translateX(100px);opacity:0} to{transform:translateX(0);opacity:1} }
+ 
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1000; display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:.2s; backdrop-filter:blur(3px); }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--white); border-radius:var(--radius-lg); padding:32px; width:90%; max-width:480px;
+    transform:translateY(20px) scale(.97); transition:.25s; box-shadow:var(--shadow-lg); max-height:90vh; overflow-y:auto; }
+  .modal-overlay.open .modal { transform:translateY(0) scale(1); }
+  .modal h2 { font-size:1.5rem; font-weight:700; margin-bottom:6px; color:var(--text); }
+  .modal .modal-sub { color:var(--text-light); font-size:.9rem; margin-bottom:24px; }
+  .modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--bg);
+    border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:var(--text-mid);
+    transition:.2s; }
+  .modal-close:hover { background:var(--border); }
+  .modal { position:relative; }
+ 
+  /* ── FORM ── */
+  .form-group { margin-bottom:16px; }
+  .form-group label { display:block; font-size:.875rem; font-weight:600; color:var(--text-mid); margin-bottom:6px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:9px; font-size:.9rem;
+    transition:.2s; background:var(--white); color:var(--text); }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color:var(--primary); box-shadow:0 0 0 3px rgba(19,82,222,.12); }
+  .form-group textarea { resize:vertical; min-height:90px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+ 
+  /* ── BUTTONS ── */
+  .btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:9px; font-weight:600;
+    font-size:.9rem; transition:.2s; cursor:pointer; }
+  .btn-primary { background:var(--primary); color:#fff; }
+  .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 4px 14px rgba(19,82,222,.3); }
+  .btn-outline { background:transparent; border:1.5px solid var(--primary); color:var(--primary); }
+  .btn-outline:hover { background:var(--primary-light); }
+  .btn-back { display:inline-flex; align-items:center; gap:6px; padding:10px 14px; border-radius:9px; font-size:.85rem; color:var(--text); background:var(--bg); border:1.5px solid var(--border); }
+  .btn-back:hover { background:#f0f4ff; border-color:var(--primary); }
+  .btn-accent { background:var(--accent); color:#fff; }
+  .btn-accent:hover { background:#e55c22; transform:translateY(-1px); box-shadow:0 4px 14px rgba(255,107,43,.3); }
+  .btn-ghost { background:transparent; color:var(--text-mid); border:1.5px solid var(--border); }
+  .btn-ghost:hover { background:var(--bg); }
+  .btn-danger { background:var(--danger); color:#fff; }
+  .btn-danger:hover { opacity:.9; }
+  .btn-sm { padding:7px 14px; font-size:.82rem; }
+  .btn-full { width:100%; justify-content:center; }
+  .btn-lg { padding:13px 28px; font-size:1rem; }
+ 
+  /* ── BADGE ── */
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:.78rem; font-weight:600; }
+  .badge-blue { background:var(--primary-light); color:var(--primary); }
+  .badge-green { background:#e6f9f1; color:#0fbb74; }
+  .badge-orange { background:var(--accent-light); color:var(--accent); }
+  .badge-gray { background:#f1f5f9; color:var(--text-light); }
+  .badge-red { background:#fff5f5; color:var(--danger); }
+  .badge-hot { background:linear-gradient(135deg,#ff6b2b,#e53e3e); color:#fff; }
+ 
+  /* ══════════════════════════════════
+     NAVBAR
+  ══════════════════════════════════ */
+  .navbar { position:sticky; top:0; z-index:500; background:#fff; border-bottom:1px solid var(--border);
+    height:var(--nav-h); display:flex; align-items:center; }
+  .nav-inner { max-width:1280px; margin:0 auto; width:100%; padding:0 24px;
+    display:flex; align-items:center; gap:24px; }
+  .nav-logo { display:flex; align-items:center; gap:8px; font-size:1.3rem; font-weight:800; color:var(--primary); white-space:nowrap; }
+  .nav-logo span { color:var(--accent); }
+  .nav-search { flex:1; max-width:560px; display:flex; align-items:center; background:var(--bg); border:1.5px solid var(--border);
+    border-radius:10px; padding:0 14px; gap:8px; transition:.2s; }
+  .nav-search:focus-within { border-color:var(--primary); background:#fff; box-shadow:0 0 0 3px rgba(19,82,222,.1); }
+  .nav-search input { flex:1; border:none; background:transparent; padding:9px 0; font-size:.9rem; color:var(--text); }
+  .nav-search input::placeholder { color:var(--text-light); }
+  .nav-search svg { color:var(--text-light); flex-shrink:0; }
+  .nav-right { display:flex; align-items:center; gap:10px; margin-left:auto; }
+  .nav-link { font-size:.875rem; font-weight:500; color:var(--text-mid); padding:6px 10px; border-radius:7px; transition:.2s; white-space:nowrap; }
+  .nav-link:hover { color:var(--primary); background:var(--primary-light); }
+  .nav-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--primary),#6c9bef);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.875rem; cursor:pointer; flex-shrink:0; }
+  .nav-dropdown { position:relative; }
+  .dropdown-menu { position:absolute; top:calc(100% + 8px); right:0; background:#fff; border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow-lg); min-width:200px; overflow:hidden; z-index:600;
+    display:none; animation:fadeDown .15s ease; }
+  .dropdown-menu.show { display:block; }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .dropdown-item { display:flex; align-items:center; gap:10px; padding:11px 16px; font-size:.875rem; font-weight:500;
+    color:var(--text-mid); cursor:pointer; transition:.15s; }
+  .dropdown-item:hover { background:var(--bg); color:var(--primary); }
+  .dropdown-divider { height:1px; background:var(--border); }
+  .dropdown-item.danger { color:var(--danger); }
+ 
+  /* ══════════════════════════════════
+     PAGES (SPA routing)
+  ══════════════════════════════════ */
+  .page { display:none; min-height:calc(100vh - var(--nav-h)); }
+  .page.active { display:block; animation:fadePage .25s ease; }
+  @keyframes fadePage { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+ 
+  /* ══════════════════════════════════
+     HOME PAGE
+  ══════════════════════════════════ */
+  .hero { background:linear-gradient(135deg,#0d2260 0%,#1352de 50%,#1a6fdf 100%); padding:60px 24px; text-align:center;
+    position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; inset:0;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-content { position:relative; max-width:700px; margin:0 auto; }
+  .hero h1 { font-size:2.6rem; font-weight:800; color:#fff; line-height:1.2; margin-bottom:12px;
+    font-family:'Lexend',sans-serif; }
+  .hero h1 span { color:#ffd166; }
+  .hero p { color:rgba(255,255,255,.8); font-size:1.05rem; margin-bottom:32px; }
+  .hero-search { display:flex; background:#fff; border-radius:12px; padding:6px; gap:6px; box-shadow:0 8px 32px rgba(0,0,0,.25); }
+  .hero-search input { flex:1; border:none; padding:12px 16px; font-size:.95rem; color:var(--text); background:transparent; }
+  .hero-tags { margin-top:20px; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+  .hero-tag { background:rgba(255,255,255,.15); color:#fff; padding:5px 14px; border-radius:20px; font-size:.82rem;
+    cursor:pointer; border:1px solid rgba(255,255,255,.25); transition:.2s; }
+  .hero-tag:hover { background:rgba(255,255,255,.25); }
+  .hero-stats { display:flex; justify-content:center; gap:40px; margin-top:36px; }
+  .hero-stat { text-align:center; color:#fff; }
+  .hero-stat strong { display:block; font-size:1.8rem; font-weight:800; font-family:'Lexend',sans-serif; }
+  .hero-stat small { font-size:.82rem; opacity:.75; }
+ 
+  .section { max-width:1280px; margin:0 auto; padding:40px 24px; }
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .section-title { font-size:1.25rem; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px; }
+  .section-title::before { content:''; width:4px; height:22px; background:var(--primary); border-radius:2px; }
+ 
+  /* Company cards */
+  .company-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; }
+  .company-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:20px;
+    text-align:center; cursor:pointer; transition:.2s; }
+  .company-card:hover { border-color:var(--primary); box-shadow:var(--shadow); transform:translateY(-2px); }
+  .company-logo { width:64px; height:64px; border-radius:12px; margin:0 auto 12px; object-fit:contain;
+    background:var(--bg); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; color:var(--primary); }
+  .company-name { font-weight:600; font-size:.9rem; color:var(--text); margin-bottom:6px; }
+  .company-new { font-size:.78rem; color:var(--primary); font-weight:600; }
+ 
+  /* Job list */
+  .job-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; }
+  .job-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:18px;
+    cursor:pointer; transition:.2s; display:flex; gap:14px; align-items:flex-start; }
+  .job-card:hover { border-color:var(--primary); box-shadow:var(--shadow); transform:translateY(-2px); }
+  .job-logo { width:48px; height:48px; border-radius:10px; background:var(--bg); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.85rem; color:var(--primary); }
+  .job-info { flex:1; min-width:0; }
+  .job-title { font-weight:600; font-size:.92rem; color:var(--text); display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px; }
+  .job-company { font-size:.82rem; color:var(--text-light); margin-bottom:6px; }
+  .job-meta { display:flex; gap:8px; flex-wrap:wrap; }
+  .job-salary { color:var(--accent); font-weight:600; font-size:.85rem; }
+  .job-location { font-size:.82rem; color:var(--text-light); }
+ 
+  /* Category cards */
+  .cat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+  .cat-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:22px 18px;
+    text-align:center; cursor:pointer; transition:.2s; }
+  .cat-card:hover { border-color:var(--primary); box-shadow:var(--shadow); transform:translateY(-2px); }
+  .cat-icon { width:56px; height:56px; background:var(--primary-light); border-radius:50%; margin:0 auto 12px;
+    display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
+  .cat-name { font-weight:700; font-size:.9rem; color:var(--text); margin-bottom:4px; }
+  .cat-count { font-size:.8rem; color:var(--text-light); }
+ 
+  /* ══════════════════════════════════
+     JOBS PAGE
+  ══════════════════════════════════ */
+  .jobs-layout { display:grid; grid-template-columns:280px 1fr; gap:24px; align-items:start; }
+  .filter-panel { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:20px; position:sticky; top:80px; }
+  .filter-title { font-weight:700; font-size:1rem; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .filter-section { margin-bottom:20px; }
+  .filter-section h4 { font-size:.875rem; font-weight:600; color:var(--text-mid); margin-bottom:10px; }
+  .filter-check { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:.875rem; cursor:pointer; }
+  .filter-check input[type=checkbox] { accent-color:var(--primary); width:15px; height:15px; }
+  .jobs-main { }
+  .jobs-header { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:16px 20px;
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .jobs-count { font-size:.875rem; color:var(--text-mid); }
+  .jobs-count strong { color:var(--primary); }
+  .jobs-list { display:flex; flex-direction:column; gap:12px; }
+  .job-list-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:18px;
+    display:flex; gap:16px; cursor:pointer; transition:.2s; }
+  .job-list-card:hover { border-color:var(--primary); box-shadow:var(--shadow); }
+  .job-list-card .jlc-logo { width:56px; height:56px; border-radius:12px; background:var(--bg); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; color:var(--primary); border:1px solid var(--border); }
+  .jlc-body { flex:1; }
+  .jlc-title { font-weight:700; font-size:1rem; color:var(--text); margin-bottom:4px; }
+  .jlc-company { font-size:.875rem; color:var(--text-mid); margin-bottom:8px; }
+  .jlc-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+  .jlc-footer { display:flex; justify-content:space-between; align-items:center; }
+  .jlc-salary { color:var(--accent); font-weight:600; font-size:.92rem; }
+  .jlc-deadline { font-size:.8rem; color:var(--text-light); }
+  .jlc-actions { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+ 
+  /* ══════════════════════════════════
+     JOB DETAIL MODAL
+  ══════════════════════════════════ */
+  .job-detail-modal { max-width:700px; }
+  .jdm-header { display:flex; gap:16px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+  .jdm-logo { width:72px; height:72px; border-radius:14px; background:var(--bg); flex-shrink:0; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem; color:var(--primary); }
+  .jdm-info h2 { font-size:1.3rem; margin-bottom:4px; }
+  .jdm-info p { color:var(--text-mid); font-size:.9rem; }
+  .jdm-meta { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+  .jdm-meta-item { background:var(--bg); border-radius:9px; padding:12px 14px; }
+  .jdm-meta-item label { font-size:.78rem; color:var(--text-light); font-weight:600; display:block; margin-bottom:3px; text-transform:uppercase; letter-spacing:.05em; }
+  .jdm-meta-item span { font-size:.9rem; font-weight:600; color:var(--text); }
+  .jdm-section { margin-bottom:20px; }
+  .jdm-section h3 { font-size:1rem; font-weight:700; margin-bottom:10px; color:var(--text); }
+  .jdm-section ul { padding-left:18px; }
+  .jdm-section li { font-size:.9rem; color:var(--text-mid); margin-bottom:5px; }
+  .jdm-actions { display:flex; gap:10px; padding-top:16px; border-top:1px solid var(--border); }
+ 
+  /* ══════════════════════════════════
+     PROFILE PAGE
+  ══════════════════════════════════ */
+  .profile-layout { display:grid; grid-template-columns:280px 1fr; gap:24px; align-items:start; }
+  .profile-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); overflow:hidden; position:sticky; top:80px; }
+  .profile-cover { height:90px; background:linear-gradient(135deg,var(--primary),#4b7be5); }
+  .profile-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,#ff6b2b,#ffd166);
+    margin:-36px auto 0; border:4px solid #fff; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1.4rem; color:#fff; position:relative; }
+  .profile-name { text-align:center; padding:12px 16px; font-weight:700; font-size:1rem; }
+  .profile-major { text-align:center; font-size:.82rem; color:var(--text-light); margin-top:-8px; padding-bottom:4px; }
+  .profile-gpa { text-align:center; padding:4px 16px 16px; }
+  .profile-nav { border-top:1px solid var(--border); }
+  .profile-nav-item { display:flex; align-items:center; gap:10px; padding:12px 18px; font-size:.875rem; font-weight:500;
+    color:var(--text-mid); cursor:pointer; transition:.15s; }
+  .profile-nav-item:hover, .profile-nav-item.active { color:var(--primary); background:var(--primary-light); }
+  .profile-nav-item svg { flex-shrink:0; }
+ 
+  .profile-main {}
+  .profile-section { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:16px; }
+  .profile-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .profile-section-header h3 { font-size:1rem; font-weight:700; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .info-item label { font-size:.78rem; color:var(--text-light); font-weight:600; display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:.04em; }
+  .info-item span { font-size:.9rem; font-weight:500; color:var(--text); }
+  .skill-tags { display:flex; flex-wrap:wrap; gap:8px; }
+  .skill-tag { background:var(--primary-light); color:var(--primary); padding:5px 12px; border-radius:20px;
+    font-size:.82rem; font-weight:600; display:flex; align-items:center; gap:6px; }
+  .skill-remove { cursor:pointer; color:var(--primary); opacity:.6; font-size:.9rem; }
+  .skill-remove:hover { opacity:1; }
+ 
+  /* GPA meter */
+  .gpa-meter { height:8px; border-radius:4px; background:var(--border); overflow:hidden; margin-top:6px; }
+  .gpa-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--primary),var(--success)); transition:1s ease; }
+ 
+  /* ══════════════════════════════════
+     MY APPLICATIONS PAGE
+  ══════════════════════════════════ */
+  .app-tabs { display:flex; gap:4px; background:var(--bg); border-radius:10px; padding:4px; margin-bottom:20px; border:1px solid var(--border); }
+  .app-tab { flex:1; text-align:center; padding:9px; font-size:.875rem; font-weight:600; color:var(--text-light);
+    border-radius:8px; cursor:pointer; transition:.2s; }
+  .app-tab.active { background:#fff; color:var(--primary); box-shadow:var(--shadow-sm); }
+  .app-list { display:flex; flex-direction:column; gap:12px; }
+  .app-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:18px; display:flex; gap:16px; }
+  .app-card .app-logo { width:50px; height:50px; border-radius:10px; background:var(--bg); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--primary); border:1px solid var(--border); }
+  .app-body { flex:1; }
+  .app-title { font-weight:700; font-size:.95rem; color:var(--text); margin-bottom:3px; }
+  .app-company { font-size:.85rem; color:var(--text-light); margin-bottom:8px; }
+  .app-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  .status-badge { padding:4px 12px; border-radius:20px; font-size:.8rem; font-weight:700; }
+  .status-pending { background:#fff8e1; color:#f59e0b; }
+  .status-reviewing { background:#e8f0fe; color:var(--primary); }
+  .status-interview { background:#e6f9f1; color:var(--success); }
+  .status-accepted { background:#e6f9f1; color:var(--success); }
+  .status-rejected { background:#fff5f5; color:var(--danger); }
+ 
+  /* ══════════════════════════════════
+     EMPTY STATE
+  ══════════════════════════════════ */
+  .empty-state { text-align:center; padding:60px 20px; }
+  .empty-icon { font-size:3rem; margin-bottom:16px; }
+  .empty-state h3 { font-size:1.1rem; font-weight:700; margin-bottom:8px; }
+  .empty-state p { color:var(--text-light); font-size:.9rem; margin-bottom:20px; }
+ 
+  /* ══════════════════════════════════
+     FOOTER
+  ══════════════════════════════════ */
+  footer { background:#0d1a3a; color:rgba(255,255,255,.7); padding:40px 24px 24px; margin-top:60px; }
+  .footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px; }
+  .footer-brand { font-size:1.4rem; font-weight:800; color:#fff; margin-bottom:10px; }
+  .footer-brand span { color:var(--accent); }
+  .footer-desc { font-size:.875rem; line-height:1.7; }
+  .footer-col h4 { color:#fff; font-weight:700; margin-bottom:14px; font-size:.9rem; }
+  .footer-col a { display:block; font-size:.875rem; margin-bottom:8px; color:rgba(255,255,255,.6); transition:.15s; cursor:pointer; }
+  .footer-col a:hover { color:#fff; }
+  .footer-bottom { max-width:1280px; margin:24px auto 0; padding-top:24px; border-top:1px solid rgba(255,255,255,.1);
+    display:flex; justify-content:space-between; font-size:.8rem; }
+ 
+  /* ══════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════ */
+  @media(max-width:900px) {
+    .jobs-layout, .profile-layout { grid-template-columns:1fr; }
+    .filter-panel { position:static; }
+    .profile-card { position:static; }
+    .footer-inner { grid-template-columns:1fr 1fr; }
+    .hero h1 { font-size:1.8rem; }
+    .hero-stats { gap:20px; }
+    .hero-stat strong { font-size:1.3rem; }
+    .jdm-meta { grid-template-columns:1fr; }
+    .form-row { grid-template-columns:1fr; }
+  }
+  @media(max-width:600px) {
+    .nav-search { display:none; }
+    .footer-inner { grid-template-columns:1fr; }
+    .info-grid { grid-template-columns:1fr; }
+    .hero-stats { flex-wrap:wrap; gap:16px; }
+  }
+  /* small helpers for admin modal */
+  .chip { background:#f1f5f9; color:var(--text); padding:6px 10px; border-radius:999px; font-weight:600; font-size:.82rem; }
+  .btn-ghost.active, .btn-ghost.active:hover { background:#eef2ff; border-color:var(--primary); color:var(--primary); }
+  @media(max-width:900px) { .modal { max-width:92%; padding:20px; } }
+</style>
+</head>
+<body>
+ 
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+ 
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <button class="btn btn-back" id="btnBack" onclick="goBack()" style="display:none">← Quay lại</button>
+    <div class="nav-logo" onclick="showPage('home')" style="cursor:pointer">Intern<span>Hub</span></div>
+    <div class="nav-search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="navSearch" type="text" placeholder="Tìm kiếm việc làm, công ty, kỹ năng..." onkeydown="if(event.key==='Enter')doSearch()">
+      <button class="btn btn-primary btn-sm" onclick="doSearch()">Tìm</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-link" onclick="showPage('jobs')">Việc Làm</span>
+      <span class="nav-link" id="navAdmin" style="display:none" onclick="showAdminPage()">Admin</span>
+      <!-- logged out -->
+      <div id="navGuest" style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-outline btn-sm" onclick="openModal('loginModal')">Đăng nhập</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('registerModal')">Đăng ký</button>
+      </div>
+      <!-- logged in -->
+      <div id="navUser" style="display:none;align-items:center;gap:8px" class="nav-dropdown">
+        <div class="nav-avatar" id="navAvatarBtn" onclick="toggleDropdown('userDropdown')">A</div>
+        <div class="dropdown-menu" id="userDropdown">
+          <div class="dropdown-item" onclick="showPage('profile');toggleDropdown('userDropdown')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Hồ sơ cá nhân
+          </div>
+          <div class="dropdown-item" onclick="showPage('applications');toggleDropdown('userDropdown')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Đơn ứng tuyển của tôi
+          </div>
+          <div class="dropdown-item" onclick="showPage('cv');toggleDropdown('userDropdown')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+            Quản lý CV
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item danger" onclick="doLogout()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Đăng xuất
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+ 
+<!-- ══════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Tìm Kiếm<span> Việc Làm</span> Phù Hợp<br>Cho Sinh Viên IT</h1>
+      <p>Kết nối sinh viên với hàng nghìn cơ hội việc làm tại các công ty hàng đầu</p>
+      <div class="hero-search">
+        <input id="heroSearch" type="text" placeholder="Tìm kiếm vị trí, công ty, kỹ năng...">
+        <select style="border:none;background:transparent;font-size:.9rem;color:var(--text-mid);padding:8px;cursor:pointer">
+          <option>Tất cả địa điểm</option><option>Hà Nội</option><option>TP. Hồ Chí Minh</option><option>Đà Nẵng</option>
+        </select>
+        <button class="btn btn-accent btn-lg" onclick="doSearch()">🔍 Tìm Kiếm</button>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag" onclick="searchTag('Lập trình')">💻 Lập trình</span>
+        <span class="hero-tag" onclick="searchTag('Marketing')">📣 Marketing</span>
+        <span class="hero-tag" onclick="searchTag('Thiết kế')">🎨 Thiết kế</span>
+        <span class="hero-tag" onclick="searchTag('Kế toán')">📊 Kế toán</span>
+        <span class="hero-tag" onclick="searchTag('Kinh doanh')">💼 Kinh doanh</span>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>2,400+</strong><small>Vị trí thực tập</small></div>
+        <div class="hero-stat"><strong>850+</strong><small>Công ty</small></div>
+        <div class="hero-stat"><strong>15,000+</strong><small>Sinh viên</small></div>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Các Công Ty Hàng Đầu</div>
+      <button class="btn btn-ghost btn-sm" onclick="showPage('jobs')">Xem tất cả →</button>
+    </div>
+    <div class="company-grid" id="companyGrid"></div>
+  </div>
+ 
+  <div class="section" style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);max-width:100%;padding:40px 0;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
+      <div class="section-header">
+        <div class="section-title">Việc Làm Tốt Nhất</div>
+        <button class="btn btn-ghost btn-sm" onclick="showPage('jobs')">Xem tất cả →</button>
+      </div>
+      <div class="job-grid" id="featuredJobs"></div>
+    </div>
+  </div>
+ 
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Ngành Nghề Trọng Điểm</div>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+</div>
+ 
+<!-- ══════════════════════════════════
+     PAGE: JOBS
+══════════════════════════════════ -->
+<div class="page" id="page-jobs">
+  <div class="section" style="padding-top:24px">
+    <div class="jobs-layout">
+      <div class="filter-panel">
+        <div class="filter-title">
+          Bộ lọc
+          <span style="font-size:.78rem;font-weight:500;color:var(--primary);cursor:pointer" onclick="clearFilters()">Xóa tất cả</span>
+        </div>
+        <div class="filter-section">
+          <h4>Địa điểm</h4>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Hà Nội</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> TP. Hồ Chí Minh</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Đà Nẵng</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Remote</label>
+        </div>
+        <div class="filter-section">
+          <h4>Loại hình</h4>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Full-time</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Part-time</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Remote</label>
+        </div>
+        <div class="filter-section">
+          <h4>Ngành nghề</h4>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Công nghệ thông tin</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Marketing</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Kế toán</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Thiết kế</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Kinh doanh</label>
+        </div>
+        <div class="filter-section">
+          <h4>Mức trợ cấp</h4>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Thỏa thuận</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> 3 - 5 triệu</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> 5 - 10 triệu</label>
+          <label class="filter-check"><input type="checkbox" onchange="filterJobs()"> Trên 10 triệu</label>
+        </div>
+      </div>
+      <div class="jobs-main">
+        <div class="jobs-header">
+          <div class="jobs-count">Tìm thấy <strong id="jobCount">0</strong> vị trí thực tập</div>
+          <select style="border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:.875rem;background:#fff" onchange="sortJobs(this.value)">
+            <option value="new">Mới nhất</option>
+            <option value="salary">Lương cao nhất</option>
+            <option value="deadline">Sắp hết hạn</option>
+          </select>
+        </div>
+        <div class="jobs-list" id="jobsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════════════════════════════
+     PAGE: PROFILE
+══════════════════════════════════ -->
+<div class="page" id="page-profile">
+  <div class="section" style="padding-top:24px">
+    <div class="profile-layout">
+      <div class="profile-card">
+        <div class="profile-cover"></div>
+        <div class="profile-avatar" id="profileAvatar">A</div>
+        <div class="profile-name" id="profileName">Sinh Viên</div>
+        <div class="profile-major" id="profileMajor">Công nghệ thông tin</div>
+        <div class="profile-gpa">
+          <span class="badge badge-blue" id="profileGPABadge">GPA: 3.5</span>
+          <div class="gpa-meter" style="margin-top:8px"><div class="gpa-fill" id="gpaFill" style="width:87.5%"></div></div>
+        </div>
+        <div class="profile-nav">
+          <div class="profile-nav-item active" onclick="showProfileTab('info')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Thông tin cá nhân
+          </div>
+          <div class="profile-nav-item" onclick="showProfileTab('skills')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Kỹ năng
+          </div>
+          <div class="profile-nav-item" onclick="showProfileTab('education')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            Học vấn
+          </div>
+          <div class="profile-nav-item" onclick="showPage('cv')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Quản lý CV
+          </div>
+          <div class="profile-nav-item" onclick="showPage('applications')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Đơn ứng tuyển
+          </div>
+        </div>
+      </div>
+      <div class="profile-main" id="profileMain"></div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════════════════════════════
+     PAGE: MY APPLICATIONS
+══════════════════════════════════ -->
+<div class="page" id="page-applications">
+  <div class="section" style="padding-top:24px">
+    <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:20px">📋 Đơn Ứng Tuyển Của Tôi</h2>
+    <div class="app-tabs">
+      <div class="app-tab active" onclick="filterApps('all',this)">Tất cả</div>
+      <div class="app-tab" onclick="filterApps('pending',this)">Chờ xem xét</div>
+      <div class="app-tab" onclick="filterApps('reviewing',this)">Đang xem xét</div>
+      <div class="app-tab" onclick="filterApps('interview',this)">Phỏng vấn</div>
+      <div class="app-tab" onclick="filterApps('accepted',this)">Chấp nhận</div>
+      <div class="app-tab" onclick="filterApps('rejected',this)">Từ chối</div>
+    </div>
+    <div class="app-list" id="appList"></div>
+  </div>
+</div>
+ 
+<!-- ══════════════════════════════════
+     PAGE: CV MANAGEMENT
+══════════════════════════════════ -->
+<div class="page" id="page-cv">
+  <div class="section" style="padding-top:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 style="font-size:1.4rem;font-weight:800">📄 Quản Lý CV</h2>
+      <button class="btn btn-primary" onclick="openModal('createCVModal')">+ Tạo CV mới</button>
+    </div>
+    <div id="cvList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
+  </div>
+</div>
+
+<div class="page" id="page-employer">
+  <div class="section" style="padding-top:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:8px">💼 Quản lý Tuyển dụng</h2>
+        <p style="color:var(--text-mid);max-width:720px">Khu vực dành cho Nhà tuyển dụng. Bạn có thể đăng tin mới, quản lý danh sách ứng viên và theo dõi trạng thái hồ sơ.</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" onclick="renderEmployerStats()">Thống kê</button>
+        <button class="btn btn-primary" onclick="renderPostNewJob()">+ Đăng tin mới</button>
+      </div>
+    </div>
+    
+    <div id="employerJobsList" style="display:grid;gap:16px">
+      <div style="padding:40px;text-align:center;color:var(--text-mid)">
+        Đang tải danh sách tin tuyển dụng...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Ví dụ hàm render (bạn có thể phát triển thêm)
+  function renderPostNewJob() {
+    alert("Chuyển hướng đến form đăng tin mới!");
+    // Logic hiển thị form tại đây
+  }
+
+  function renderEmployerStats() {
+    console.log("Hiển thị biểu đồ thống kê ứng viên");
+  }
+</script>
+
+<!-- ══════════════════════════════════
+     PAGE: ADMIN
+══════════════════════════════════ -->
+<div class="page" id="page-admin">
+  <div class="section" style="padding-top:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:8px">🛠️ Khu vực Admin</h2>
+        <p style="color:var(--text-mid);max-width:720px">Trang dành cho Admin. Tại đây bạn có thể quản lý hồ sơ sinh viên, xem chi tiết và cập nhật thông tin ứng viên.</p>
+      </div>
+      <button class="btn btn-primary" onclick="renderAdminStudentList()">Cập nhật danh sách</button>
+    </div>
+    <div id="adminStudentsList" style="display:grid;gap:16px"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     MODALS
+══════════════════════════════════ -->
+ 
+<!-- LOGIN -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2>👋 Chào mừng trở lại!</h2>
+    <div class="modal-sub">Đăng nhập vào tài khoản của bạn</div>
+    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="example@email.com"></div>
+    <div class="form-group"><label>Mật khẩu</label><input type="password" id="loginPass" placeholder="Nhập mật khẩu"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <span style="font-size:.82rem;color:var(--primary);cursor:pointer" onclick="closeModal('loginModal');openModal('forgotModal')">Quên mật khẩu?</span>
+    </div>
+    <button class="btn btn-primary btn-full btn-lg" onclick="doLogin()">Đăng nhập</button>
+    <div style="text-align:center;margin-top:16px;font-size:.875rem;color:var(--text-light)">
+      Chưa có tài khoản? <span style="color:var(--primary);font-weight:600;cursor:pointer" onclick="closeModal('loginModal');openModal('registerModal')">Đăng ký ngay</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- REGISTER -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+    <h2>🎓 Tạo tài khoản mới</h2>
+    <div class="modal-sub">Bắt đầu hành trình thực tập của bạn</div>
+    <div class="form-row">
+      <div class="form-group"><label>Họ</label><input type="text" id="regLastName" placeholder="Nguyễn"></div>
+      <div class="form-group"><label>Tên</label><input type="text" id="regFirstName" placeholder="Văn An"></div>
+    </div>
+    <div class="form-group"><label>Email sinh viên</label><input type="email" id="regEmail" placeholder="sv@student.edu.vn"></div>
+    <div class="form-group"><label>Mã sinh viên</label><input type="text" id="regMaSV" placeholder="SV001234"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Chuyên ngành</label>
+        <select id="regMajor">
+          <option>Công nghệ thông tin</option><option>Kỹ thuật phần mềm</option><option>Marketing</option>
+          <option>Kế toán</option><option>Kinh tế</option><option>Kiến trúc</option><option>Khác</option>
+        </select>
+      </div>
+      <div class="form-group"><label>GPA</label><input type="number" id="regGPA" placeholder="3.50" min="0" max="4" step="0.01"></div>
+    </div>
+    <div class="form-group"><label>Số điện thoại</label><input type="tel" id="regPhone" placeholder="0901234567"></div>
+    <div class="form-group"><label>Mật khẩu</label><input type="password" id="regPass" placeholder="Tối thiểu 8 ký tự"></div>
+    <div class="form-group"><label>Xác nhận mật khẩu</label><input type="password" id="regPass2" placeholder="Nhập lại mật khẩu"></div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;font-size:.82rem;color:var(--text-mid)">
+      <input type="checkbox" id="regTerms" style="margin-top:2px;accent-color:var(--primary)">
+      <label for="regTerms">Tôi đồng ý với <span style="color:var(--primary)">Điều khoản sử dụng</span> và <span style="color:var(--primary)">Chính sách bảo mật</span></label>
+    </div>
+    <button class="btn btn-primary btn-full btn-lg" onclick="doRegister()">Đăng ký</button>
+    <div style="text-align:center;margin-top:16px;font-size:.875rem;color:var(--text-light)">
+      Đã có tài khoản? <span style="color:var(--primary);font-weight:600;cursor:pointer" onclick="closeModal('registerModal');openModal('loginModal')">Đăng nhập</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- FORGOT PASSWORD -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('forgotModal')">✕</button>
+    <h2>🔑 Quên mật khẩu</h2>
+    <div class="modal-sub">Nhập email để nhận link đặt lại mật khẩu</div>
+    <div class="form-group"><label>Email</label><input type="email" id="forgotEmail" placeholder="example@email.com"></div>
+    <button class="btn btn-primary btn-full" onclick="doForgotPassword()">Gửi email đặt lại</button>
+    <div style="text-align:center;margin-top:14px">
+      <span style="font-size:.875rem;color:var(--primary);cursor:pointer" onclick="closeModal('forgotModal');openModal('loginModal')">← Quay lại đăng nhập</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- JOB DETAIL -->
+<div class="modal-overlay" id="jobDetailModal">
+  <div class="modal job-detail-modal" id="jobDetailContent"></div>
+</div>
+ 
+<!-- APPLY -->
+<div class="modal-overlay" id="applyModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('applyModal')">✕</button>
+    <h2>📨 Nộp đơn ứng tuyển</h2>
+    <div class="modal-sub" id="applyJobTitle">Vị trí: ...</div>
+    <div class="form-group"><label>Chọn CV</label>
+      <select id="applyCV">
+        <option value="">-- Chọn CV --</option>
+        <option>CV Lập trình Frontend</option>
+        <option>CV Marketing Digital</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Thư giới thiệu (tùy chọn)</label>
+      <textarea id="applyCoverLetter" placeholder="Viết vài dòng giới thiệu bản thân và lý do bạn muốn ứng tuyển vào vị trí này..."></textarea>
+    </div>
+    <div style="background:var(--bg);border-radius:9px;padding:14px;margin-bottom:16px;font-size:.85rem;color:var(--text-mid)">
+      💡 <strong>Mẹo:</strong> Thư giới thiệu tốt tăng khả năng được chú ý lên 3 lần!
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('applyModal')">Hủy</button>
+      <button class="btn btn-primary btn-full" onclick="doApply()">Nộp đơn ngay</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- EDIT PROFILE -->
+<div class="modal-overlay" id="editProfileModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('editProfileModal')">✕</button>
+    <h2>✏️ Chỉnh sửa thông tin</h2>
+    <div class="modal-sub">Cập nhật thông tin cá nhân của bạn</div>
+    <div class="form-row">
+      <div class="form-group"><label>Họ và tên</label><input type="text" id="editName" value="Nguyễn Văn An"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="editEmail" value="an.nv@student.edu.vn"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Số điện thoại</label><input type="tel" id="editPhone" value="0901234567"></div>
+      <div class="form-group"><label>GPA</label><input type="number" id="editGPA" value="3.50" min="0" max="4" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Chuyên ngành</label>
+        <select id="editMajor"><option selected>Công nghệ thông tin</option><option>Kỹ thuật phần mềm</option><option>Marketing</option><option>Kế toán</option></select>
+      </div>
+      <div class="form-group"><label>Trường</label><input type="text" id="editSchool" value="ĐH Bách Khoa Hà Nội"></div>
+    </div>
+    <div class="form-group"><label>Giới thiệu bản thân</label>
+      <textarea id="editBio" placeholder="Viết vài dòng về bản thân...">Sinh viên năm 3 ngành CNTT, đam mê lập trình web và mobile. Có kinh nghiệm làm việc nhóm và học hỏi nhanh.</textarea>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveProfile()">Lưu thay đổi</button>
+  </div>
+</div>
+ 
+<!-- ADD SKILL -->
+<div class="modal-overlay" id="addSkillModal">
+  <div class="modal" style="max-width:400px">
+    <button class="modal-close" onclick="closeModal('addSkillModal')">✕</button>
+    <h2>➕ Thêm kỹ năng</h2>
+    <div class="form-group"><label>Kỹ năng</label>
+      <input type="text" id="newSkillName" placeholder="Ví dụ: React, Python, Figma...">
+    </div>
+    <div class="form-group"><label>Trình độ</label>
+      <select id="newSkillLevel">
+        <option>Cơ bản</option><option>Trung cấp</option><option selected>Thành thạo</option><option>Chuyên gia</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="addSkill()">Thêm kỹ năng</button>
+  </div>
+</div>
+ 
+<!-- CREATE CV -->
+<div class="modal-overlay" id="createCVModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('createCVModal')">✕</button>
+    <h2>📄 Tạo CV mới</h2>
+    <div class="form-group"><label>Tên CV</label><input type="text" id="cvName" placeholder="Ví dụ: CV Lập trình Frontend"></div>
+    <div class="form-group"><label>Mục tiêu nghề nghiệp</label>
+      <textarea id="cvObjective" placeholder="Mô tả mục tiêu và định hướng nghề nghiệp của bạn..."></textarea>
+    </div>
+    <div class="form-group"><label>Upload file CV (PDF)</label>
+      <input type="file" id="cvFile" accept=".pdf,.doc,.docx" style="border:1.5px dashed var(--border);padding:20px;width:100%;border-radius:9px;cursor:pointer;font-size:.875rem;color:var(--text-mid)">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('createCVModal')">Hủy</button>
+      <button class="btn btn-primary btn-full" onclick="createCV()">Tạo CV</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW CV MODAL -->
+<div class="modal-overlay" id="viewCVModal">
+  <div class="modal" style="max-width:760px">
+    <button class="modal-close" onclick="closeModal('viewCVModal')">✕</button>
+    <h2>📄 Xem CV</h2>
+    <div id="viewCVContent"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost" onclick="closeModal('viewCVModal')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN EDIT STUDENT MODAL -->
+<div class="modal-overlay" id="adminEditStudentModal">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('adminEditStudentModal')">✕</button>
+    <h2>✏️ Chỉnh sửa hồ sơ sinh viên</h2>
+    <div id="adminEditStudentContent"></div>
+  </div>
+</div>
+
+<!-- ADMIN VIEW STUDENT MODAL -->
+<div class="modal-overlay" id="adminViewStudentModal">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('adminViewStudentModal')">✕</button>
+    <h2>👤 Thông tin hồ sơ</h2>
+    <div id="adminViewStudentContent"></div>
+  </div>
+</div>
+
+<!-- ADMIN ADD STUDENT MODAL -->
+<div class="modal-overlay" id="adminAddStudentModal">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('adminAddStudentModal')">✕</button>
+    <h2>➕ Thêm hồ sơ sinh viên</h2>
+    <div id="adminAddStudentContent">
+      <div class="form-group"><label>Họ và tên</label><input id="addName" type="text"></div>
+      <div class="form-group"><label>Email</label><input id="addEmail" type="email"></div>
+      <div class="form-group"><label>Mã SV</label><input id="addMasv" type="text"></div>
+      <div class="form-group"><label>Số điện thoại</label><input id="addPhone" type="text"></div>
+      <div class="form-group"><label>Trường</label><input id="addSchool" type="text"></div>
+      <div class="form-group"><label>Ngành</label><input id="addMajor" type="text"></div>
+      <div class="form-group"><label>GPA</label><input id="addGPA" type="number" min="0" max="4" step="0.01"></div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn btn-ghost btn-full" onclick="closeModal('adminAddStudentModal')">Hủy</button>
+        <button class="btn btn-primary btn-full" onclick="saveNewStudent()">Lưu hồ sơ</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════════════════════════════
+     FOOTER
+══════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Intern<span>Hub</span></div>
+      <div class="footer-desc">Nền tảng kết nối sinh viên với cơ hội thực tập tốt nhất tại Việt Nam. Tìm kiếm, ứng tuyển và phát triển sự nghiệp của bạn.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ứng viên</h4>
+      <a onclick="showPage('jobs')">Tìm việc thực tập</a>
+      <a onclick="showPage('cv')">Quản lý CV</a>
+      <a onclick="showPage('profile')">Hồ sơ cá nhân</a>
+      <a onclick="showPage('applications')">Đơn ứng tuyển</a>
+    </div>
+    <div class="footer-col">
+      <h4>Nhà tuyển dụng</h4>
+      <a onclick="showToast('Tính năng đang phát triển','info')">Đăng tin tuyển dụng</a>
+      <a onclick="showToast('Tính năng đang phát triển','info')">Tìm kiếm ứng viên</a>
+      <a onclick="showToast('Tính năng đang phát triển','info')">Gói dịch vụ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Hỗ trợ</h4>
+      <a onclick="showToast('Hỗ trợ: support@internhub.vn','info')">Liên hệ</a>
+      <a onclick="showToast('Tính năng đang phát triển','info')">Chính sách bảo mật</a>
+      <a onclick="showToast('Tính năng đang phát triển','info')">Điều khoản sử dụng</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 InternHub. All rights reserved.</span>
+    <span>Made with ❤️ for Vietnamese students</span>
+  </div>
+</footer>
+ 
+<script>
+// ══════════════════════════════
+// DATA
+// ══════════════════════════════
+const COMPANIES = [
+  {id:1,name:'FPT Software',sector:'CNTT',color:'#00aaff',abbr:'FPT'},
+  {id:2,name:'VNG Corporation',sector:'Game/Tech',color:'#e53e3e',abbr:'VNG'},
+  {id:3,name:'Momo',sector:'Fintech',color:'#a855f7',abbr:'MM'},
+  {id:4,name:'Tiki',sector:'E-commerce',color:'#0ea5e9',abbr:'TK'},
+  {id:5,name:'VinGroup',sector:'Tập đoàn',color:'#16a34a',abbr:'VG'},
+  {id:6,name:'VNPT',sector:'Viễn thông',color:'#1352de',abbr:'VN'},
+];
+ 
+const JOBS = [
+  {id:1,title:'Frontend Developer Intern',company:'FPT Software',companyId:1,salary:'5-8 triệu/tháng',location:'Hà Nội',type:'Full-time',deadline:'30/06/2026',desc:'Thực tập lập trình Frontend với React, Vue.js',requirements:['Biết HTML/CSS/JS','Có kiến thức về React hoặc Vue','GPA >= 3.0','Có thể làm 5 ngày/tuần'],benefits:['Trợ cấp 5-8 triệu','Mentoring 1-1','Xem xét full-time sau thực tập','Team building hàng quý'],hot:true,new:true,category:'CNTT'},
+  {id:2,title:'Marketing Digital Intern',company:'Tiki',companyId:4,salary:'4-6 triệu/tháng',location:'TP. HCM',type:'Part-time',deadline:'15/06/2026',desc:'Thực tập Marketing Online tại Tiki',requirements:['Sinh viên năm 3-4 ngành Marketing','Có kỹ năng viết content','Hiểu biết về SEO, SEM là lợi thế'],benefits:['Trợ cấp 4-6 triệu','Làm việc linh hoạt','Môi trường năng động'],hot:true,new:false,category:'Marketing'},
+  {id:3,title:'Backend Java Intern',company:'VNG Corporation',companyId:2,salary:'Thỏa thuận',location:'TP. HCM',type:'Full-time',deadline:'20/06/2026',desc:'Thực tập lập trình Backend với Java Spring Boot',requirements:['Biết Java OOP','Hiểu về REST API','Có kiến thức SQL cơ bản'],benefits:['Thưởng hiệu suất','Canteen công ty','Xe đưa đón'],hot:false,new:true,category:'CNTT'},
+  {id:4,title:'Data Analyst Intern',company:'Momo',companyId:3,salary:'6-9 triệu/tháng',location:'TP. HCM',type:'Full-time',deadline:'25/06/2026',desc:'Phân tích dữ liệu cho sản phẩm Fintech',requirements:['Biết Python/R hoặc SQL','Có kiến thức thống kê cơ bản','Sử dụng được Excel nâng cao'],benefits:['Trợ cấp 6-9 triệu','Cổ phần nhân viên','Bảo hiểm sức khỏe'],hot:true,new:false,category:'CNTT'},
+  {id:5,title:'UI/UX Design Intern',company:'VNPT',companyId:6,salary:'4-5 triệu/tháng',location:'Hà Nội',type:'Full-time',deadline:'28/06/2026',desc:'Thiết kế giao diện người dùng cho sản phẩm số',requirements:['Biết Figma/Adobe XD','Có portfolio thiết kế','Hiểu nguyên tắc UX cơ bản'],benefits:['Trợ cấp 4-5 triệu','Học thêm kỹ năng thiết kế','Certificate sau thực tập'],hot:false,new:true,category:'Thiết kế'},
+  {id:6,title:'Business Development Intern',company:'VinGroup',companyId:5,salary:'5-7 triệu/tháng',location:'Hà Nội',type:'Full-time',deadline:'10/07/2026',desc:'Hỗ trợ phát triển kinh doanh và mở rộng thị trường',requirements:['Sinh viên kinh tế/kinh doanh','Giao tiếp tốt','Tiếng Anh khá'],benefits:['Trợ cấp 5-7 triệu','Networking rộng','Xem xét tuyển dụng chính thức'],hot:false,new:false,category:'Kinh doanh'},
+];
+ 
+const CATEGORIES = [
+  {icon:'💻',name:'Công nghệ thông tin',count:827},
+  {icon:'📣',name:'Marketing / Truyền thông',count:456},
+  {icon:'📊',name:'Kế toán / Kiểm toán',count:312},
+  {icon:'🎨',name:'Thiết kế / Sáng tạo',count:289},
+  {icon:'💼',name:'Kinh doanh / Bán hàng',count:534},
+  {icon:'🏗️',name:'Kiến trúc / Xây dựng',count:198},
+  {icon:'🏭',name:'Sản xuất / Kỹ thuật',count:164},
+  {icon:'📦',name:'Logistics / Kho bãi',count:121},
+];
+ 
+// App state
+let state = {
+  loggedIn: false,
+  user: null,
+  applications: [],
+  skills: ['JavaScript','React','Python','SQL','Git'],
+  cvList: [
+    { name: 'CV Kỹ Sư Phần Mềm - Mẫu A', objective: 'Ứng tuyển vị trí Thực tập sinh Frontend. Sử dụng React, TypeScript và xây dựng giao diện người dùng hiệu quả.', date: '31/05/2026', isDefault: true },
+    { name: 'CV Marketing - Mẫu B', objective: 'Ứng tuyển vị trí Thực tập Marketing Digital. Kinh nghiệm chạy chiến dịch, viết content và tối ưu SEO.', date: '30/05/2026', isDefault: false },
+    { name: 'CV Data Analyst - Mẫu C', objective: 'Ứng tuyển vị trí Thực tập Data Analyst. Thành thạo Python, SQL và phân tích dữ liệu cho sản phẩm.', date: '29/05/2026', isDefault: false },
+    { name: 'CV Thiết Kế UI/UX - Mẫu D', objective: 'Ứng tuyển vị trí Thực tập UI/UX. Có kinh nghiệm thiết kế Figma, prototype và nghiên cứu người dùng.', date: '28/05/2026', isDefault: false }
+  ],
+  currentJobId: null,
+  currentFilter: 'all',
+  pageHistory: [],
+  users: [
+    {id:1,name:'Nguyễn Văn An',email:'an.nv@student.edu.vn',password:'student123',role:'student',gpa:3.5,major:'Công nghệ thông tin',school:'ĐH Bách Khoa Hà Nội',phone:'0901234567',masv:'SV001234'},
+    {id:2,name:'Admin Nội Bộ',email:'admin@internhub.com',password:'admin123',role:'admin',gpa:0,major:'Quản trị hệ thống',school:'InternHub',phone:'19001900',masv:'ADMIN'}
+  ],
+};
+ 
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderCompanies();
+  renderFeaturedJobs();
+  renderCategories();
+  renderJobsList(JOBS);
+  renderApplications();
+  renderCVList();
+  renderProfileMain('info');
+});
+ 
+// ══════════════════════════════
+// NAVIGATION
+// ══════════════════════════════
+function showPage(name, options={fromBack:false}) {
+  if(name==='admin' && (!state.loggedIn || state.user?.role !== 'admin')) {
+    showToast('Bạn cần quyền admin để truy cập','error');
+    return;
+  }
+  if(!state.loggedIn && ['profile','applications','cv'].includes(name)) {
+    showToast('Vui lòng đăng nhập để tiếp tục','info');
+    openModal('loginModal');
+    return;
+  }
+  const active = document.querySelector('.page.active');
+  const current = active ? active.id.replace('page-','') : 'home';
+  if(!options.fromBack && current !== name) {
+    state.pageHistory.push(current);
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  window.scrollTo(0,0);
+  document.getElementById('btnBack').style.display = state.pageHistory.length ? 'inline-flex' : 'none';
+  if(name==='profile') renderProfileMain('info');
+  if(name==='applications') renderApplications();
+  if(name==='cv') renderCVList();
+  if(name==='admin') renderAdminStudentList();
+}
+
+function goBack() {
+  const prev = state.pageHistory.pop() || 'home';
+  showPage(prev, {fromBack:true});
+}
+ 
+function renderAdminStudentList() {
+  const container = document.getElementById('adminStudentsList');
+  if(!container) return;
+  const q = (document.getElementById('adminSearch')?.value || '').trim().toLowerCase();
+  const students = state.users.filter(u => u.role === 'student' && (!q || (u.name+" "+u.email+" "+(u.masv||'')).toLowerCase().includes(q)));
+  if(!students.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><h3>Chưa có hồ sơ sinh viên</h3><p>Hãy thêm hoặc đăng ký một tài khoản sinh viên để quản lý tại đây.</p></div>';
+    return;
+  }
+  container.innerHTML = students.map(u => `
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:18px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;">
+      <div>
+        <div style="font-weight:700;font-size:1rem">${u.name}</div>
+        <div style="margin-top:6px;color:var(--text-mid);font-size:.9rem">${u.email} • ${u.masv}</div>
+        <div style="margin-top:8px;color:var(--text-light);font-size:.88rem">${u.major} • ${u.school || 'Chưa có trường'} • GPA ${u.gpa.toFixed(2)}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="btn btn-outline btn-sm" onclick="openAdminViewStudentModal(${u.id})">Xem</button>
+        <button class="btn btn-outline btn-sm" onclick="openAdminEditStudentModal(${u.id})">Sửa</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteStudentProfile(${u.id})">Xóa</button>
+      </div>
+    </div>`).join('');
+}
+
+function showAdminPage() {
+  showPage('admin');
+}
+
+function openAdminEditStudentModal(id) {
+  const user = state.users.find(u => u.id === id);
+  if(!user) return;
+  const content = document.getElementById('adminEditStudentContent');
+  if(!content) return;
+  content.innerHTML = `
+    <div class="form-group"><label>Họ và tên</label><input id="adminEditName" type="text" value="${user.name}"></div>
+    <div class="form-group"><label>Email</label><input id="adminEditEmail" type="email" value="${user.email}" readonly></div>
+    <div class="form-group"><label>Số điện thoại</label><input id="adminEditPhone" type="text" value="${user.phone || ''}"></div>
+    <div class="form-group"><label>Trường</label><input id="adminEditSchool" type="text" value="${user.school || ''}"></div>
+    <div class="form-group"><label>Ngành</label><input id="adminEditMajor" type="text" value="${user.major || ''}"></div>
+    <div class="form-group"><label>GPA</label><input id="adminEditGPA" type="number" min="0" max="4" step="0.01" value="${user.gpa || 0}"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('adminEditStudentModal')">Hủy</button>
+      <button class="btn btn-primary btn-full" onclick="saveAdminStudentChanges(${user.id})">Lưu thay đổi</button>
+    </div>`;
+  openModal('adminEditStudentModal');
+}
+
+function saveAdminStudentChanges(id) {
+  const user = state.users.find(u => u.id === id);
+  if(!user) return;
+  user.name = document.getElementById('adminEditName').value.trim() || user.name;
+  user.phone = document.getElementById('adminEditPhone').value.trim();
+  user.school = document.getElementById('adminEditSchool').value.trim();
+  user.major = document.getElementById('adminEditMajor').value.trim();
+  user.gpa = parseFloat(document.getElementById('adminEditGPA').value) || user.gpa;
+  if(state.user?.email === user.email) state.user = Object.assign(state.user, user);
+  renderAdminStudentList();
+  closeModal('adminEditStudentModal');
+  showToast('✅ Cập nhật hồ sơ sinh viên thành công','success');
+}
+
+function deleteStudentProfile(id) {
+  if(!confirm('Bạn có chắc muốn xóa hồ sơ sinh viên này?')) return;
+  state.users = state.users.filter(u => u.id !== id);
+  if(state.user?.id === id) doLogout();
+  renderAdminStudentList();
+  showToast('✅ Đã xóa hồ sơ sinh viên','info');
+}
+
+function openAdminViewStudentModal(id) {
+  const user = state.users.find(u => u.id === id);
+  if(!user) return;
+  const content = document.getElementById('adminViewStudentContent');
+  content.innerHTML = `
+    <div style="display:grid;grid-template-columns:260px 1fr;gap:18px">
+      <div style="background:#fff;border-radius:12px;padding:18px;border:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">${user.name.charAt(0)}</div>
+          <div>
+            <div style="font-weight:800">${user.name}</div>
+            <div style="font-size:.9rem;color:var(--text-mid)">${user.email}</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:.9rem;color:var(--text-mid)">
+          <div><strong>Mã SV:</strong> ${user.masv || '-'}</div>
+          <div><strong>Trường:</strong> ${user.school || '-'}</div>
+          <div><strong>Ngành:</strong> ${user.major || '-'}</div>
+          <div><strong>GPA:</strong> ${user.gpa?.toFixed(2) || '0.00'}</div>
+          <div><strong>Điện thoại:</strong> ${user.phone || '-'}</div>
+        </div>
+        <div style="margin-top:14px">
+          <button class="btn btn-outline btn-sm" onclick="openAdminEditStudentModal(${user.id})">Sửa hồ sơ</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteStudentProfile(${user.id})">Xóa hồ sơ</button>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:12px;padding:18px;border:1px solid var(--border)">
+        <div style="display:flex;gap:8px;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px">
+          <button class="btn btn-ghost" id="tab-info" onclick="switchAdminViewTab('info', ${user.id})">Thông tin chung</button>
+          <button class="btn btn-ghost" id="tab-skills" onclick="switchAdminViewTab('skills', ${user.id})">Kỹ năng & Chứng chỉ</button>
+          <button class="btn btn-ghost" id="tab-projects" onclick="switchAdminViewTab('projects', ${user.id})">Dự án & Công nghệ</button>
+          <button class="btn btn-ghost" id="tab-work" onclick="switchAdminViewTab('work', ${user.id})">Lịch sử làm việc</button>
+        </div>
+        <div id="adminViewBody">
+          <!-- content injected by switchAdminViewTab -->
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+          <button class="btn btn-ghost" onclick="closeModal('adminViewStudentModal')">Đóng</button>
+          <button class="btn btn-primary" onclick="saveAdminViewChanges(${user.id})">Lưu thay đổi</button>
+        </div>
+      </div>
+    </div>`;
+  openModal('adminViewStudentModal');
+  // default show info tab
+  switchAdminViewTab('info', id);
+}
+
+function switchAdminViewTab(tab, id) {
+  const body = document.getElementById('adminViewBody');
+  const user = state.users.find(u => u.id === id);
+  if(!user) return;
+  // reset active classes
+  ['tab-info','tab-skills','tab-projects','tab-work'].forEach(t=>{ const el=document.getElementById(t); if(el) el.classList.remove('active'); });
+  const tabEl = document.getElementById('tab-'+tab);
+  if(tabEl) tabEl.classList.add('active');
+  if(tab==='info') {
+    body.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label>Tên</label>
+          <input id="view_name" type="text" value="${user.name}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px">
+        </div>
+        <div>
+          <label>Email</label>
+          <input id="view_email" type="email" value="${user.email}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px" readonly>
+        </div>
+        <div>
+          <label>Mã SV</label>
+          <input id="view_masv" type="text" value="${user.masv || ''}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px">
+        </div>
+        <div>
+          <label>Điện thoại</label>
+          <input id="view_phone" type="text" value="${user.phone || ''}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px">
+        </div>
+        <div>
+          <label>Trường</label>
+          <input id="view_school" type="text" value="${user.school || ''}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px">
+        </div>
+        <div>
+          <label>Ngành</label>
+          <input id="view_major" type="text" value="${user.major || ''}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px">
+        </div>
+        <div>
+          <label>GPA</label>
+          <input id="view_gpa" type="number" min="0" max="4" step="0.01" value="${user.gpa || 0}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px">
+        </div>
+      </div>`;
+  } else if(tab==='skills') {
+    const skills = (user.skills || []).join(', ');
+    const certs = (user.certs || []).map(c=>`<div class="chip">${c}</div>`).join('');
+    body.innerHTML = `
+      <div>
+        <div style="margin-bottom:8px"><strong>Kỹ năng</strong></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="adminViewSkillInput" placeholder="Thêm kỹ năng (ví dụ: React)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:8px">
+          <button class="btn btn-outline" onclick="addSkillToStudent(${id})">Thêm</button>
+        </div>
+        <div id="adminViewSkillsList" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${(user.skills||[]).map(s=>`<div class=\"chip\">${s}</div>`).join('')}</div>
+        <div style="margin-top:12px"><strong>Chứng chỉ</strong></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="adminViewCertInput" placeholder="Thêm chứng chỉ (ví dụ: TOEFL)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:8px">
+          <button class="btn btn-outline" onclick="addCertToStudent(${id})">Thêm</button>
+        </div>
+        <div id="adminViewCertsList" style="display:flex;gap:8px;flex-wrap:wrap">${(user.certs||[]).map(c=>`<div class=\"chip\">${c}</div>`).join('')}</div>
+      </div>`;
+  } else if(tab==='projects') {
+    body.innerHTML = `
+      <div>
+        <div style="margin-bottom:8px"><strong>Dự án & Công nghệ</strong></div>
+        <div id="adminViewProjectsList">${(user.projects||[]).map(p=>`<div style=\"padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px\"><strong>${p.title}</strong><div style=\"color:var(--text-mid)\">${p.desc}</div></div>`).join('') || '<div style="color:var(--text-mid)">Chưa có dự án</div>'}</div>
+      </div>`;
+  } else if(tab==='work') {
+    body.innerHTML = `
+      <div>
+        <div style="margin-bottom:8px"><strong>Lịch sử làm việc</strong></div>
+        <div id="adminViewWorkList">${(user.work||[]).map(w=>`<div style=\"padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px\"><strong>${w.role} @ ${w.company}</strong><div style=\"color:var(--text-mid)\">${w.period}</div></div>`).join('') || '<div style="color:var(--text-mid)">Chưa có lịch sử</div>'}</div>
+      </div>`;
+  }
+}
+
+function addSkillToStudent(id) {
+  const v = document.getElementById('adminViewSkillInput').value.trim();
+  if(!v) return;
+  const user = state.users.find(u=>u.id===id);
+  user.skills = user.skills || [];
+  user.skills.push(v);
+  document.getElementById('adminViewSkillInput').value='';
+  document.getElementById('adminViewSkillsList').innerHTML = user.skills.map(s=>`<div class="chip">${s}</div>`).join('');
+}
+
+function addCertToStudent(id) {
+  const v = document.getElementById('adminViewCertInput').value.trim();
+  if(!v) return;
+  const user = state.users.find(u=>u.id===id);
+  user.certs = user.certs || [];
+  user.certs.push(v);
+  document.getElementById('adminViewCertInput').value='';
+  document.getElementById('adminViewCertsList').innerHTML = user.certs.map(c=>`<div class="chip">${c}</div>`).join('');
+}
+
+function saveAdminViewChanges(id) {
+  const user = state.users.find(u=>u.id===id);
+  if(!user) return;
+  user.name = document.getElementById('view_name').value.trim() || user.name;
+  // email is readonly
+  user.masv = document.getElementById('view_masv').value.trim();
+  user.phone = document.getElementById('view_phone').value.trim();
+  user.school = document.getElementById('view_school').value.trim();
+  user.major = document.getElementById('view_major').value.trim();
+  user.gpa = parseFloat(document.getElementById('view_gpa').value) || user.gpa;
+  renderAdminStudentList();
+  showToast('✅ Lưu thay đổi hồ sơ thành công','success');
+  closeModal('adminViewStudentModal');
+}
+
+function openAdminAddStudentModal() {
+  // reset fields
+  ['addName','addEmail','addMasv','addPhone','addSchool','addMajor','addGPA'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  openModal('adminAddStudentModal');
+}
+
+function saveNewStudent() {
+  const name = document.getElementById('addName').value.trim();
+  const email = document.getElementById('addEmail').value.trim().toLowerCase();
+  const masv = document.getElementById('addMasv').value.trim();
+  if(!name || !email || !masv) { showToast('Vui lòng điền ít nhất họ tên, email và mã sinh viên','error'); return; }
+  const gpa = parseFloat(document.getElementById('addGPA').value) || 0;
+  const newUser = { id: Date.now(), name, email, password: 'changeme', role: 'student', gpa, major: document.getElementById('addMajor').value.trim(), school: document.getElementById('addSchool').value.trim(), phone: document.getElementById('addPhone').value.trim(), masv };
+  state.users.push(newUser);
+  closeModal('adminAddStudentModal');
+  renderAdminStudentList();
+  showToast('✅ Đã thêm hồ sơ sinh viên','success');
+}
+
+function filterAdminStudents() {
+  renderAdminStudentList();
+}
+
+function toggleDropdown(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+document.addEventListener('click', e => {
+  if(!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+  }
+});
+ 
+// ══════════════════════════════
+// RENDER HOME
+// ══════════════════════════════
+function renderCompanies() {
+  const grid = document.getElementById('companyGrid');
+  grid.innerHTML = COMPANIES.map(c => `
+    <div class="company-card" onclick="showToast('Đang xem công ty ${c.name}','info')">
+      <div class="company-logo" style="background:${c.color}20;color:${c.color}">${c.abbr}</div>
+      <div class="company-name">${c.name}</div>
+      <div class="company-new badge badge-blue">Việc mới</div>
+    </div>`).join('');
+}
+ 
+function renderFeaturedJobs() {
+  const grid = document.getElementById('featuredJobs');
+  grid.innerHTML = JOBS.slice(0,6).map(j => `
+    <div class="job-card" onclick="openJobDetail(${j.id})">
+      <div class="job-logo" style="background:${getColor(j.companyId)}20;color:${getColor(j.companyId)}">${j.company.slice(0,3)}</div>
+      <div class="job-info">
+        <div class="job-title">${j.title} ${j.hot?'<span class="badge badge-hot">🔥 Hot</span>':''} ${j.new?'<span class="badge badge-green">Mới</span>':''}</div>
+        <div class="job-company">${j.company}</div>
+        <div class="job-meta">
+          <span class="job-salary">${j.salary}</span>
+          <span class="job-location">📍 ${j.location}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+ 
+function renderCategories() {
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = CATEGORIES.map(c => `
+    <div class="cat-card" onclick="showPage('jobs')">
+      <div class="cat-icon">${c.icon}</div>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${c.count} Việc Làm</div>
+    </div>`).join('');
+}
+ 
+function getColor(companyId) {
+  const c = COMPANIES.find(x=>x.id===companyId);
+  return c ? c.color : '#1352de';
+}
+ 
+// ══════════════════════════════
+// RENDER JOBS LIST
+// ══════════════════════════════
+function renderJobsList(jobs) {
+  const list = document.getElementById('jobsList');
+  const count = document.getElementById('jobCount');
+  count.textContent = jobs.length;
+  if(!jobs.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><h3>Không tìm thấy kết quả</h3><p>Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p></div>';
+    return;
+  }
+  list.innerHTML = jobs.map(j => `
+    <div class="job-list-card">
+      <div class="jlc-logo" style="background:${getColor(j.companyId)}15;color:${getColor(j.companyId)}">${j.company.slice(0,3)}</div>
+      <div class="jlc-body" onclick="openJobDetail(${j.id})" style="cursor:pointer">
+        <div class="jlc-title">${j.title} ${j.hot?'<span class="badge badge-hot">🔥 Hot</span>':''} ${j.new?'<span class="badge badge-green">Mới</span>':''}</div>
+        <div class="jlc-company">${j.company}</div>
+        <div class="jlc-tags">
+          <span class="badge badge-gray">📍 ${j.location}</span>
+          <span class="badge badge-blue">${j.type}</span>
+          <span class="badge badge-gray">${j.category}</span>
+        </div>
+        <div class="jlc-footer">
+          <span class="jlc-salary">${j.salary}</span>
+          <span class="jlc-deadline">⏰ Hạn: ${j.deadline}</span>
+        </div>
+      </div>
+      <div class="jlc-actions">
+        <button class="btn btn-primary btn-sm" onclick="openApplyModal(${j.id})">Ứng tuyển</button>
+        <button class="btn btn-ghost btn-sm" onclick="openJobDetail(${j.id})">Chi tiết</button>
+      </div>
+    </div>`).join('');
+}
+ 
+function filterJobs() { renderJobsList(JOBS); }
+function clearFilters() {
+  document.querySelectorAll('.filter-check input').forEach(c=>c.checked=false);
+  renderJobsList(JOBS);
+  showToast('Đã xóa tất cả bộ lọc','info');
+}
+function sortJobs(v) { showToast('Đã sắp xếp theo: '+v,'info'); }
+ 
+function doSearch() {
+  const q = (document.getElementById('heroSearch').value || document.getElementById('navSearch').value).toLowerCase();
+  if(!q) { showPage('jobs'); return; }
+  const result = JOBS.filter(j => j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.category.toLowerCase().includes(q));
+  showPage('jobs');
+  setTimeout(() => renderJobsList(result), 50);
+}
+function searchTag(tag) {
+  document.getElementById('heroSearch').value = tag;
+  doSearch();
+}
+ 
+// ══════════════════════════════
+// JOB DETAIL
+// ══════════════════════════════
+function openJobDetail(id) {
+  const j = JOBS.find(x=>x.id===id);
+  if(!j) return;
+  state.currentJobId = id;
+  const c = getColor(j.companyId);
+  document.getElementById('jobDetailContent').innerHTML = `
+    <button class="modal-close" onclick="closeModal('jobDetailModal')">✕</button>
+    <div class="jdm-header">
+      <div class="jdm-logo" style="background:${c}15;color:${c}">${j.company.slice(0,3)}</div>
+      <div class="jdm-info">
+        <h2>${j.title}</h2>
+        <p>${j.company} • ${j.location}</p>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          ${j.hot?'<span class="badge badge-hot">🔥 Hot</span>':''}
+          ${j.new?'<span class="badge badge-green">✨ Mới đăng</span>':''}
+          <span class="badge badge-blue">${j.type}</span>
+        </div>
+      </div>
+    </div>
+    <div class="jdm-meta">
+      <div class="jdm-meta-item"><label>Trợ cấp</label><span style="color:var(--accent)">${j.salary}</span></div>
+      <div class="jdm-meta-item"><label>Địa điểm</label><span>📍 ${j.location}</span></div>
+      <div class="jdm-meta-item"><label>Hình thức</label><span>${j.type}</span></div>
+      <div class="jdm-meta-item"><label>Hạn nộp</label><span>⏰ ${j.deadline}</span></div>
+    </div>
+    <div class="jdm-section">
+      <h3>📋 Mô tả công việc</h3>
+      <p style="font-size:.9rem;color:var(--text-mid)">${j.desc}</p>
+    </div>
+    <div class="jdm-section">
+      <h3>✅ Yêu cầu</h3>
+      <ul>${j.requirements.map(r=>`<li>${r}</li>`).join('')}</ul>
+    </div>
+    <div class="jdm-section">
+      <h3>🎁 Quyền lợi</h3>
+      <ul>${j.benefits.map(b=>`<li>${b}</li>`).join('')}</ul>
+    </div>
+    <div class="jdm-actions">
+      <button class="btn btn-primary btn-lg" style="flex:1" onclick="closeModal('jobDetailModal');openApplyModal(${j.id})">📨 Ứng tuyển ngay</button>
+      <button class="btn btn-ghost" onclick="showToast('Đã lưu việc làm','success')">🔖 Lưu</button>
+      <button class="btn btn-ghost" onclick="showToast('Đã chia sẻ link','info')">📤 Chia sẻ</button>
+    </div>`;
+  openModal('jobDetailModal');
+}
+ 
+// ══════════════════════════════
+// APPLY
+// ══════════════════════════════
+function openApplyModal(id) {
+  if(!state.loggedIn) { showToast('Vui lòng đăng nhập để ứng tuyển','info'); openModal('loginModal'); return; }
+  const j = JOBS.find(x=>x.id===id);
+  state.currentJobId = id;
+  closeModal('jobDetailModal');
+  document.getElementById('applyJobTitle').textContent = 'Vị trí: ' + j.title + ' tại ' + j.company;
+  // populate CV select
+  const sel = document.getElementById('applyCV');
+  sel.innerHTML = '<option value="">-- Chọn CV --</option>' + (state.cvList.length ? state.cvList.map((c,i)=>`<option value="${i}">${c.name}</option>`).join('') : '<option value="default">CV mặc định</option>');
+  openModal('applyModal');
+}
+ 
+function doApply() {
+  const cv = document.getElementById('applyCV').value;
+  if(!cv) { showToast('Vui lòng chọn CV','error'); return; }
+  const j = JOBS.find(x=>x.id===state.currentJobId);
+  state.applications.push({jobId:state.currentJobId,title:j.title,company:j.company,status:'pending',date:new Date().toLocaleDateString('vi-VN'),salary:j.salary,location:j.location});
+  closeModal('applyModal');
+  showToast('🎉 Đã nộp đơn thành công! Chúc bạn may mắn.','success');
+  renderApplications();
+}
+ 
+// ══════════════════════════════
+// AUTH
+// ══════════════════════════════
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  if(!email||!pass) { showToast('Vui lòng nhập đầy đủ thông tin','error'); return; }
+  const user = state.users.find(u => u.email.toLowerCase() === email && u.password === pass);
+  if(!user) { showToast('Email hoặc mật khẩu không đúng','error'); return; }
+  state.loggedIn = true;
+  state.user = {...user};
+  closeModal('loginModal');
+  document.getElementById('navGuest').style.display='none';
+  const nu = document.getElementById('navUser');
+  nu.style.display='flex';
+  document.getElementById('navAvatarBtn').textContent = state.user.name.charAt(state.user.name.lastIndexOf(' ')+1);
+  document.getElementById('navAdmin').style.display = state.user.role === 'admin' ? 'inline-flex' : 'none';
+  showToast('🎉 Đăng nhập thành công! Xin chào, '+state.user.name,'success');
+  renderProfileMain('info');
+  updateProfileSidebar();
+}
+ 
+function doRegister() {
+  const ln = document.getElementById('regLastName').value.trim();
+  const fn = document.getElementById('regFirstName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const masv = document.getElementById('regMaSV').value.trim();
+  const gpa = parseFloat(document.getElementById('regGPA').value)||3.0;
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const terms = document.getElementById('regTerms').checked;
+  if(!ln||!fn||!email||!masv||!pass) { showToast('Vui lòng điền đầy đủ thông tin','error'); return; }
+  if(pass!==pass2) { showToast('Mật khẩu xác nhận không khớp','error'); return; }
+  if(!terms) { showToast('Vui lòng đồng ý điều khoản sử dụng','error'); return; }
+  const fullName = ln + ' ' + fn;
+  const newUser = {id:Date.now(),name:fullName,email, password:pass, role:'student', gpa, major:document.getElementById('regMajor').value, school:'', phone:document.getElementById('regPhone').value, masv};
+  state.users.push(newUser);
+  state.loggedIn = true;
+  state.user = {...newUser};
+  closeModal('registerModal');
+  document.getElementById('navGuest').style.display='none';
+  const nu = document.getElementById('navUser');
+  nu.style.display='flex';
+  document.getElementById('navAvatarBtn').textContent = fn.charAt(0);
+  document.getElementById('navAdmin').style.display = 'none';
+  showToast('🎉 Đăng ký thành công! Chào mừng '+fullName,'success');
+  updateProfileSidebar();
+}
+ 
+function doLogout() {
+  state.loggedIn = false; state.user = null; state.pageHistory = [];
+  document.getElementById('navGuest').style.display='flex';
+  document.getElementById('navUser').style.display='none';
+  document.getElementById('navAdmin').style.display='none';
+  document.getElementById('btnBack').style.display='none';
+  showPage('home', { fromBack: true });
+  showToast('Đã đăng xuất','info');
+}
+ 
+function doForgotPassword() {
+  const email = document.getElementById('forgotEmail').value;
+  if(!email) { showToast('Vui lòng nhập email','error'); return; }
+  closeModal('forgotModal');
+  showToast('📧 Đã gửi email đặt lại mật khẩu tới '+email,'success');
+}
+ 
+// ══════════════════════════════
+// PROFILE
+// ══════════════════════════════
+function updateProfileSidebar() {
+  if(!state.user) return;
+  document.getElementById('profileAvatar').textContent = state.user.name.charAt(state.user.name.lastIndexOf(' ')+1);
+  document.getElementById('profileName').textContent = state.user.name;
+  document.getElementById('profileMajor').textContent = state.user.major;
+  document.getElementById('profileGPABadge').textContent = 'GPA: ' + state.user.gpa.toFixed(2);
+  document.getElementById('gpaFill').style.width = (state.user.gpa/4*100)+'%';
+}
+ 
+function showProfileTab(tab) {
+  document.querySelectorAll('.profile-nav-item').forEach((el,i)=>{ if(i<3) el.classList.remove('active'); });
+  const items = document.querySelectorAll('.profile-nav-item');
+  const map = {info:0,skills:1,education:2};
+  if(map[tab]!==undefined) items[map[tab]].classList.add('active');
+  renderProfileMain(tab);
+}
+ 
+function renderProfileMain(tab) {
+  const u = state.user || {name:'Sinh Viên',email:'sv@student.edu.vn',gpa:3.5,major:'CNTT',school:'',phone:'',masv:''};
+  const main = document.getElementById('profileMain');
+  if(!main) return;
+  updateProfileSidebar();
+  if(tab==='info') {
+    main.innerHTML = `
+      <div class="profile-section">
+        <div class="profile-section-header">
+          <h3>👤 Thông tin cá nhân</h3>
+          <button class="btn btn-outline btn-sm" onclick="openModal('editProfileModal')">✏️ Chỉnh sửa</button>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><label>Họ và tên</label><span>${u.name}</span></div>
+          <div class="info-item"><label>Mã sinh viên</label><span>${u.masv||'SV001234'}</span></div>
+          <div class="info-item"><label>Email</label><span>${u.email}</span></div>
+          <div class="info-item"><label>Số điện thoại</label><span>${u.phone||'Chưa cập nhật'}</span></div>
+          <div class="info-item"><label>Ngành</label><span>${u.major}</span></div>
+          <div class="info-item"><label>Trường</label><span>${u.school||'ĐH Bách Khoa Hà Nội'}</span></div>
+          <div class="info-item"><label>GPA</label><span style="color:var(--primary);font-weight:700">${u.gpa.toFixed(2)} / 4.00</span></div>
+          <div class="info-item"><label>Trạng thái</label><span class="badge badge-green">✅ Đang tìm thực tập</span></div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-header"><h3>📝 Giới thiệu bản thân</h3><button class="btn btn-ghost btn-sm" onclick="openModal('editProfileModal')">Sửa</button></div>
+        <p style="font-size:.9rem;color:var(--text-mid);line-height:1.7">Sinh viên năm 3 ngành CNTT, đam mê lập trình web và mobile. Có kinh nghiệm làm việc nhóm và học hỏi nhanh.</p>
+      </div>`;
+  } else if(tab==='skills') {
+    main.innerHTML = `
+      <div class="profile-section">
+        <div class="profile-section-header">
+          <h3>⚡ Kỹ năng của tôi</h3>
+          <button class="btn btn-primary btn-sm" onclick="openModal('addSkillModal')">+ Thêm kỹ năng</button>
+        </div>
+        <div class="skill-tags" id="skillTagsContainer">
+          ${state.skills.map((s,i)=>`<span class="skill-tag">${s}<span class="skill-remove" onclick="removeSkill(${i})">✕</span></span>`).join('')}
+        </div>
+        ${state.skills.length===0?'<p style="color:var(--text-light);font-size:.9rem">Chưa có kỹ năng. Thêm kỹ năng để nhà tuyển dụng dễ tìm thấy bạn!</p>':''}
+      </div>`;
+  } else if(tab==='education') {
+    main.innerHTML = `
+      <div class="profile-section">
+        <div class="profile-section-header"><h3>🎓 Học vấn</h3><button class="btn btn-primary btn-sm" onclick="showToast('Tính năng đang phát triển','info')">+ Thêm</button></div>
+        <div style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:start">
+            <div>
+              <div style="font-weight:700;margin-bottom:4px">ĐH Bách Khoa Hà Nội</div>
+              <div style="color:var(--text-mid);font-size:.875rem">Kỹ sư Công nghệ thông tin</div>
+              <div style="color:var(--text-light);font-size:.82rem;margin-top:4px">2022 – 2026 (dự kiến)</div>
+            </div>
+            <span class="badge badge-blue">GPA ${u.gpa.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-header"><h3>🏆 Chứng chỉ & Giải thưởng</h3><button class="btn btn-primary btn-sm" onclick="showToast('Tính năng đang phát triển','info')">+ Thêm</button></div>
+        <p style="color:var(--text-light);font-size:.875rem">Chưa có chứng chỉ. Thêm chứng chỉ để tăng điểm hồ sơ!</p>
+      </div>`;
+  }
+}
+ 
+function saveProfile() {
+  const name = document.getElementById('editName').value;
+  const gpa = parseFloat(document.getElementById('editGPA').value)||3.0;
+  const major = document.getElementById('editMajor').value;
+  const school = document.getElementById('editSchool').value;
+  const phone = document.getElementById('editPhone').value;
+  if(state.user) Object.assign(state.user, {name,gpa,major,school,phone});
+  closeModal('editProfileModal');
+  showToast('✅ Đã lưu thông tin thành công','success');
+  updateProfileSidebar();
+  renderProfileMain('info');
+}
+ 
+function removeSkill(idx) {
+  state.skills.splice(idx,1);
+  renderProfileMain('skills');
+  showToast('Đã xóa kỹ năng','info');
+}
+ 
+function addSkill() {
+  const name = document.getElementById('newSkillName').value.trim();
+  if(!name) { showToast('Nhập tên kỹ năng','error'); return; }
+  if(state.skills.includes(name)) { showToast('Kỹ năng đã tồn tại','error'); return; }
+  state.skills.push(name);
+  document.getElementById('newSkillName').value='';
+  closeModal('addSkillModal');
+  renderProfileMain('skills');
+  showToast('✅ Đã thêm kỹ năng: '+name,'success');
+}
+ 
+// ══════════════════════════════
+// APPLICATIONS
+// ══════════════════════════════
+const STATUS_MAP = {pending:{label:'Chờ xem xét',cls:'status-pending'},reviewing:{label:'Đang xem xét',cls:'status-reviewing'},interview:{label:'Phỏng vấn',cls:'status-interview'},accepted:{label:'Chấp nhận',cls:'status-accepted'},rejected:{label:'Từ chối',cls:'status-rejected'}};
+ 
+function renderApplications(filter) {
+  filter = filter || state.currentFilter;
+  const list = document.getElementById('appList');
+  if(!list) return;
+  const apps = filter==='all' ? state.applications : state.applications.filter(a=>a.status===filter);
+  if(!apps.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3>Chưa có đơn ứng tuyển</h3><p>Hãy ứng tuyển vào các vị trí thực tập phù hợp với bạn!</p><button class="btn btn-primary" onclick="showPage('jobs')">Tìm việc ngay</button></div>`;
+    return;
+  }
+  list.innerHTML = apps.map((a,i) => {
+    const s = STATUS_MAP[a.status];
+    const color = getColor(JOBS.find(j=>j.id===a.jobId)?.companyId||1);
+    return `
+    <div class="app-card">
+      <div class="app-logo" style="background:${color}15;color:${color}">${a.company.slice(0,3)}</div>
+      <div class="app-body">
+        <div class="app-title">${a.title}</div>
+        <div class="app-company">${a.company} • ${a.location||'TP. HCM'}</div>
+        <div class="app-footer">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="status-badge ${s.cls}">${s.label}</span>
+            <span style="font-size:.8rem;color:var(--text-light)">Nộp: ${a.date}</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="openJobDetail(${a.jobId})">Xem chi tiết</button>
+            <button class="btn btn-danger btn-sm" onclick="cancelApp(${i})">Rút đơn</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+ 
+function filterApps(filter, el) {
+  state.currentFilter = filter;
+  document.querySelectorAll('.app-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderApplications(filter);
+}
+ 
+function cancelApp(idx) {
+  state.applications.splice(idx,1);
+  renderApplications();
+  showToast('Đã rút đơn ứng tuyển','info');
+}
+ 
+// ══════════════════════════════
+// CV MANAGEMENT
+// ══════════════════════════════
+function renderCVList() {
+  const el = document.getElementById('cvList');
+  if(!el) return;
+  if(!state.cvList.length) {
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📄</div><h3>Chưa có CV nào</h3><p>Tạo CV để bắt đầu ứng tuyển!</p><button class="btn btn-primary" onclick="openModal('createCVModal')">Tạo CV ngay</button></div>`;
+    return;
+  }
+  el.innerHTML = state.cvList.map((c,i) => `
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;transition:.2s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:44px;height:44px;background:var(--primary-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem">📄</div>
+        <div><div style="font-weight:700;font-size:.95rem">${c.name}</div><div style="font-size:.8rem;color:var(--text-light)">${c.date}</div></div>
+        ${c.isDefault?'<span class="badge badge-green" style="margin-left:auto">Mặc định</span>':''}
+      </div>
+      <div style="font-size:.82rem;color:var(--text-light);margin-bottom:14px;line-height:1.6">${c.objective||'Chưa có mô tả'}</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="showCVDetail(${i})">Xem</button>
+        <button class="btn btn-ghost btn-sm" onclick="setDefaultCV(${i})">Đặt mặc định</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCV(${i})">Xóa</button>
+      </div>
+    </div>`).join('');
+}
+ 
+function createCV() {
+  const name = document.getElementById('cvName').value.trim();
+  const obj = document.getElementById('cvObjective').value.trim();
+  if(!name) { showToast('Nhập tên CV','error'); return; }
+  state.cvList.push({name,objective:obj,date:new Date().toLocaleDateString('vi-VN'),isDefault:state.cvList.length===0});
+  closeModal('createCVModal');
+  document.getElementById('cvName').value='';
+  document.getElementById('cvObjective').value='';
+  renderCVList();
+  showToast('✅ Đã tạo CV: '+name,'success');
+}
+
+function showCVDetail(idx) {
+  const c = state.cvList[idx];
+  if(!c) return;
+  const el = document.getElementById('viewCVContent');
+  el.innerHTML = `
+    <div style="display:flex;gap:18px">
+      <div style="width:220px;background:#fff;border:1px solid var(--border);padding:16px;border-radius:12px">
+        <div style="font-weight:800;font-size:1.05rem">${c.name}</div>
+        <div style="color:var(--text-light);margin-top:6px">${c.date}</div>
+        ${c.isDefault?'<div style="margin-top:10px"><span class="badge badge-green">Mặc định</span></div>':''}
+      </div>
+      <div style="flex:1;background:#fff;border:1px solid var(--border);padding:16px;border-radius:12px">
+        <h3 style="margin-bottom:8px">Mục tiêu nghề nghiệp</h3>
+        <p style="color:var(--text-mid);line-height:1.6">${c.objective || 'Không có'}</p>
+        <hr style="margin:12px 0;border-color:var(--border)">
+        <div id="viewCVSections">
+          ${c.sections ? c.sections.map(s=>`<div style="margin-bottom:10px"><strong>${s.title}</strong><div style="color:var(--text-mid)">${s.content}</div></div>`).join('') : '<div style="color:var(--text-mid)">Không có phần chi tiết cho CV này.</div>'}
+        </div>
+      </div>
+    </div>`;
+  openModal('viewCVModal');
+}
+ 
+function deleteCV(idx) {
+  state.cvList.splice(idx,1);
+  renderCVList();
+  showToast('Đã xóa CV','info');
+}
+ 
+function setDefaultCV(idx) {
+  state.cvList.forEach((c,i)=>c.isDefault=i===idx);
+  renderCVList();
+  showToast('✅ Đã đặt CV mặc định','success');
+}
+ 
+// ══════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(mo => {
+  mo.addEventListener('click', e => { if(e.target===mo) mo.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+});
+ 
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+function showToast(msg, type='info') {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  const icons = {success:'✅',error:'❌',info:'ℹ️'};
+  el.innerHTML = `<span>${icons[type]||''}</span><span>${msg}</span>`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(100px)'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, 3500);
+}
+
+</script>
+</body>
+</html>
